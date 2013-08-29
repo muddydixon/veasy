@@ -1,0 +1,24 @@
+{
+  "name": "d3chart",
+  "version": "0.0.0",
+  "authors": [
+    "muddydixon <muddydixon@gmail.com>"
+  ],
+  "license": "Apache License Version 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "mocha": "~1.12.0"
+  },
+  "devDependencies": {
+    "chai": "~1.7.2",
+    "d3": "~3.3.2",
+    "jquery": "~2.0.3",
+    "d3-plugins": "*"
+  }
+}
