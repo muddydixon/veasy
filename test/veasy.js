@@ -29,7 +29,7 @@ describe('bar chart', function() {
   it('basically point', function() {
     var chart, d, idx, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -47,7 +47,7 @@ describe('bar chart', function() {
   it('error uncorresponding accessor', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.x;
     }).y(function(d) {
@@ -60,7 +60,7 @@ describe('bar chart', function() {
   it('only one serie', function() {
     var bars, chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -73,7 +73,7 @@ describe('bar chart', function() {
   it('transpose serie', function() {
     var chart, d, idx, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart, {
+    sales = new Veasy(chart, {
       transpose: true,
       margin: [100, 30],
       ylim: [0, 1500],
@@ -97,7 +97,7 @@ describe('bar chart', function() {
   it('custom color', function() {
     var bar, bars, chart, dat, idx, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart, {
+    sales = new Veasy(chart, {
       color: monochrom
     });
     sales.x(function(d) {
@@ -128,7 +128,7 @@ describe('bar chart', function() {
   return it('custom color of each serie', function() {
     var bar, bars, chart, dat, idx, sales, serie, _i, _j, _len, _len1, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -193,7 +193,7 @@ describe('chart', function() {
   });
   it('width option', function() {
     var sales, svg;
-    sales = new Chart(lineChart, {
+    sales = new Veasy(lineChart, {
       width: 400
     });
     svg = $("#" + id).find('svg');
@@ -202,7 +202,7 @@ describe('chart', function() {
   });
   return it('height option', function() {
     var sales, svg;
-    sales = new Chart(lineChart, {
+    sales = new Veasy(lineChart, {
       height: 200
     });
     svg = $("#" + id).find('svg');
@@ -247,7 +247,7 @@ describe('flow chart', function() {
   return it('basically data', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart, {
+    sales = new Veasy(chart, {
       width: 300
     });
     return sales.drawFlow({
@@ -303,7 +303,7 @@ describe('line chart', function() {
   it('basically series', function() {
     var chart, idx, line, lines, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {
@@ -322,7 +322,7 @@ describe('line chart', function() {
   it('basically point', function() {
     var chart, idx, line, lines, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart, {
+    sales = new Veasy(chart, {
       sort: function(a, b) {
         return a.x - b.x;
       }
@@ -345,7 +345,7 @@ describe('line chart', function() {
   it('error uncorresponding accessor', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.x;
     }).y(function(d) {
@@ -358,7 +358,7 @@ describe('line chart', function() {
   it('only one serie', function() {
     var chart, lines, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {
@@ -372,7 +372,7 @@ describe('line chart', function() {
   it('custom color', function() {
     var chart, idx, line, lines, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart, {
+    sales = new Veasy(chart, {
       color: monochrom
     });
     sales.x(function(d) {
@@ -393,7 +393,7 @@ describe('line chart', function() {
   return it('custom color of each serie', function() {
     var chart, idx, line, lines, sales, serie, _i, _j, _len, _len1, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {
@@ -434,21 +434,21 @@ describe('option', function() {
   };
   it('one option', function() {
     var opt;
-    opt = new Chart.Option(base);
+    opt = new Veasy.Option(base);
     expect(opt).have.property('a', 1);
     expect(opt).have.property('b', 2);
     return expect(opt).have.property('c', 3);
   });
   it('two option', function() {
     var opt;
-    opt = new Chart.Option(base, src1);
+    opt = new Veasy.Option(base, src1);
     expect(opt).have.property('a', 11);
     expect(opt).have.property('b', 12);
     return expect(opt).have.property('c', 3);
   });
   return it('more option', function() {
     var opt;
-    opt = new Chart.Option(base, src1, src2);
+    opt = new Veasy.Option(base, src1, src2);
     expect(opt).have.property('a', 21);
     expect(opt).have.property('b', 12);
     expect(opt).have.property('c', 3);
@@ -486,7 +486,7 @@ describe('pie chart', function() {
   it('basically point', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart);
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -497,7 +497,7 @@ describe('pie chart', function() {
   return it('basically point with margin', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Chart(chart, {
+    sales = new Veasy(chart, {
       innerMargin: 120
     });
     sales.x(function(d) {

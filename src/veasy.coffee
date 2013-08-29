@@ -1,11 +1,11 @@
 
 unless d3?
-  throw new Error 'd3chart require d3.\nwrite <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>"'
+  throw new Error 'veasy require d3.\nwrite <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>"'
   
 unless $ or jQuery
-  throw new Error 'd3chart require jquery.\nwrite <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>"'
+  throw new Error 'veasy require jquery.\nwrite <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>"'
 
-class Chart
+class Veasy
   constructor: (@$target, @opt = {})->
     @$target = $(@$target) unless $target instanceof jQuery
 
@@ -61,9 +61,9 @@ class Chart
   #
   checkAccessorValidation: (data)->
     if typeof @_x(data) is 'undefined'
-      return @errorHandler new Chart.AccessorError @_x, @_y, data
+      return @errorHandler new Veasy.AccessorError @_x, @_y, data
     if typeof @_y(data) is 'undefined'
-      return @errorHandler new Chart.AccessorError @_x, @_y, data
+      return @errorHandler new Veasy.AccessorError @_x, @_y, data
 
   #
   # ### inhibit
@@ -119,7 +119,7 @@ class Chart
   drawLine: (series, opt = {})->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Chart.Option @opt, opt
+    opt = new Veasy.Option @opt, opt
 
     for serie in series
       unless serie.data?
@@ -180,7 +180,7 @@ class Chart
   drawBar: (series, opt = {})->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Chart.Option @opt, opt
+    opt = new Veasy.Option @opt, opt
     
     for serie in series
       unless serie.data?
@@ -271,7 +271,7 @@ class Chart
   drawPie: (series, opt = {})->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Chart.Option @opt, opt
+    opt = new Veasy.Option @opt, opt
 
     for serie in series
       unless serie.data?
@@ -305,14 +305,13 @@ class Chart
         .on('touchstart', @inhibitOther('g.arc'))
         .on('mouseout', @clearInhibit('g.arc'))
         .on('touchend', @clearInhibit('g.arc'))
-      
   #
   # ### draw flow chart
   # 
   drawFlow: (data, opt = {})->
-    opt = new Chart.Option @opt, opt
+    opt = new Veasy.Option @opt, opt
     unless d3.sankey?
-      throw new Error 'd3chart require d3.sankey.\nuse d3.sankey (https://github.com/d3/d3-plugins/tree/master/sankey)'
+      throw new Error 'veasy require d3.sankey.\nuse d3.sankey (https://github.com/d3/d3-plugins/tree/master/sankey)'
     unless data.nodes and data.links
       return @errorHandler new Error "flow chart require {nodes: [], links: []}"
 
@@ -364,7 +363,7 @@ class Chart
     # node.append('text')    
     # text
 
-class Chart.Option
+class Veasy.Option
   # overwrite value after options
   constructor: (opts...)->
     for opt in opts
@@ -372,7 +371,7 @@ class Chart.Option
         this[k] = v
 
     
-class Chart.AccessorError extends Error
+class Veasy.AccessorError extends Error
   constructor: (x, y, data)->
     @message = ["accessor uncorrespoding to data"
       "= x ====="
@@ -384,4 +383,4 @@ class Chart.AccessorError extends Error
       "======="
       ].join("\n")
 
-this.Chart = Chart
+this.Veasy = Veasy

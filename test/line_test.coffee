@@ -22,7 +22,7 @@ describe 'line chart', ->
 
   it 'basically series', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawLine seriesData
 
@@ -33,7 +33,7 @@ describe 'line chart', ->
 
   it 'basically point', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart, {sort: (a, b)-> a.x - b.x}
+    sales = new Veasy chart, {sort: (a, b)-> a.x - b.x}
     sales.x((d)-> d.x).y((d)-> d.y)
     sales.drawLine pointData
 
@@ -44,7 +44,7 @@ describe 'line chart', ->
     
   it 'error uncorresponding accessor', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.x).y((d)-> d.y)
 
     expect(()->
@@ -53,7 +53,7 @@ describe 'line chart', ->
 
   it 'only one serie', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawLine seriesData[0].data
 
@@ -64,7 +64,7 @@ describe 'line chart', ->
     
   it 'custom color', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart, {color: monochrom}
+    sales = new Veasy chart, {color: monochrom}
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawLine seriesData
   
@@ -75,7 +75,7 @@ describe 'line chart', ->
       
   it 'custom color of each serie', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.time).y((d)-> d.value)
     for serie, idx in seriesData
       serie.opt =

@@ -18,7 +18,7 @@ describe 'pie chart', ->
 
   it 'basically point', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawPie pointData
 
@@ -28,6 +28,6 @@ describe 'pie chart', ->
 
   it 'basically point with margin', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart, {innerMargin: 120}
+    sales = new Veasy chart, {innerMargin: 120}
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawPie pointData.slice(0, 3)

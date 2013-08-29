@@ -18,7 +18,7 @@ describe 'bar chart', ->
 
   it 'basically point', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawBar pointData
 
@@ -28,7 +28,7 @@ describe 'bar chart', ->
 
   it 'error uncorresponding accessor', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.x).y((d)-> d.y)
     expect(()->
       sales.drawBar pointData
@@ -36,7 +36,7 @@ describe 'bar chart', ->
 
   it 'only one serie', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawBar pointData[0].data
 
@@ -45,7 +45,7 @@ describe 'bar chart', ->
     
   it 'transpose serie', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart,
+    sales = new Veasy chart,
       transpose: true, margin: [100, 30], ylim: [0, 1500]
       width: 500, height: 600
     sales.x((d)-> d.label).y((d)-> d.value)
@@ -57,7 +57,7 @@ describe 'bar chart', ->
     
   it 'custom color', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart, {color: monochrom}
+    sales = new Veasy chart, {color: monochrom}
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawBar pointData
   
@@ -70,7 +70,7 @@ describe 'bar chart', ->
       
   it 'custom color of each serie', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart
+    sales = new Veasy chart
     sales.x((d)-> d.label).y((d)-> d.value)
     for serie, idx in pointData
       serie.opt =

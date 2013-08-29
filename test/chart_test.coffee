@@ -14,14 +14,14 @@ describe 'chart', ->
     lineChart.remove?()
     
   it 'width option', ->
-    sales = new Chart lineChart, {width: 400}
+    sales = new Veasy lineChart, {width: 400}
 
     svg = $("##{id}").find('svg')
     expect(+svg.attr('width')).to.be.eql 400
     expect(+svg.attr('height')).to.be.eql 300
     
   it 'height option', ->
-    sales = new Chart lineChart, {height: 200}
+    sales = new Veasy lineChart, {height: 200}
 
     svg = $("##{id}").find('svg')
     expect(+svg.attr('width')).to.be.eql $("##{id}").width()

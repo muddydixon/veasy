@@ -6,10 +6,10 @@ module.exports = (grunt)->
         bare: true
       src:
         files:
-          "lib/d3chart.js": "src/d3chart.coffee"
+          "lib/veasy.js": "src/veasy.coffee"
       test:
         files:
-          "test/d3chart.js": [
+          "test/veasy.js": [
             "test/header.coffee"
             "test/*_test.coffee"
             "test/footer.coffee"
@@ -17,7 +17,7 @@ module.exports = (grunt)->
           
     watch:
       src: 
-        files: ["src/d3chart.coffee"]
+        files: ["src/veasy.coffee"]
         tasks: ["coffee"]
       test:
         files: ["test/*_test.coffee"]

@@ -27,6 +27,6 @@ describe 'flow chart', ->
 
   it 'basically data', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Chart chart, {width: 300}
+    sales = new Veasy chart, {width: 300}
     sales.drawFlow {nodes: fromNodes.concat(toNodes), links: links}
 
