@@ -293,7 +293,7 @@ class Veasy
       .domain((serie.name for serie in series))
 
     series.forEach (serie, idx)=>
-      color = d3.scale.category10()
+      color = if opt.color? then d3.scale.ordinal().range(opt.color) else d3.scale.category10()
       arc = d3.svg.arc()
         .outerRadius(radius - outerMargin)
         .innerRadius(innerMargin)
