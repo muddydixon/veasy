@@ -33,7 +33,10 @@ describe 'line chart', ->
 
   it 'basically point', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart, {sort: (a, b)-> a.x - b.x}
+    sales = new Veasy chart,
+      sort: (a, b)-> a.x - b.x
+      tooltip:
+        format: (d)-> "x = #{d.x}"
     sales.x((d)-> d.x).y((d)-> d.y)
     sales.drawLine pointData
 
@@ -52,8 +55,11 @@ describe 'line chart', ->
     ).throw(Error)
 
   it 'only one serie', ->
+    format = d3.time.format("%Y/%m/%d")
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart
+    sales = new Veasy chart,
+      tooltip:
+        format: (d)-> "<ul><li>x = #{format(d.time)}</li><li>y = #{d.value}</li></ul>"
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawLine seriesData[0].data
 

@@ -1,6 +1,6 @@
 {
   "name": "veasy",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "authors": [
     "muddydixon <muddydixon@gmail.com>"
   ],
@@ -13,12 +13,13 @@
     "tests"
   ],
   "dependencies": {
-    "mocha": "~1.12.0"
+    "jquery": "~2.0.3",
+    "d3": "~3.3.2",
+    "d3-plugins": "*",
+    "tipsy": "~0.1.7"
   },
   "devDependencies": {
-    "chai": "~1.7.2",
-    "d3": "~3.3.2",
-    "jquery": "~2.0.3",
-    "d3-plugins": "*"
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2"
   }
 }

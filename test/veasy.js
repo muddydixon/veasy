@@ -325,6 +325,11 @@ describe('line chart', function() {
     sales = new Veasy(chart, {
       sort: function(a, b) {
         return a.x - b.x;
+      },
+      tooltip: {
+        format: function(d) {
+          return "x = " + d.x;
+        }
       }
     });
     sales.x(function(d) {
@@ -356,9 +361,16 @@ describe('line chart', function() {
     })["throw"](Error);
   });
   it('only one serie', function() {
-    var chart, lines, sales;
+    var chart, format, lines, sales;
+    format = d3.time.format("%Y/%m/%d");
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
+    sales = new Veasy(chart, {
+      tooltip: {
+        format: function(d) {
+          return "<ul><li>x = " + (format(d.time)) + "</li><li>y = " + d.value + "</li></ul>";
+        }
+      }
+    });
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {

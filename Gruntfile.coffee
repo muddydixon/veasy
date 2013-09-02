@@ -20,7 +20,7 @@ module.exports = (grunt)->
         files: ["src/veasy.coffee"]
         tasks: ["coffee"]
       test:
-        files: ["test/*_test.coffee"]
+        files: ["test/*_test.coffee", "Gruntfile.coffee"]
         tasks: ["coffee"]
 
   grunt.loadNpmTasks "grunt-contrib-coffee"

@@ -1,17 +1,17 @@
 {
   "name": "veasy",
-  "version": "0.0.0",
-  "description": "ERROR: No README.md file found!",
+  "version": "0.0.1",
+  "description": "Veasy: easy visualizaion using d3.js",
   "main": "lib/veasy.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": ""
   },
   "repository": "",
-  "author": "",
-  "license": "BSD",
+  "author": "muddydixon@gmail.com",
+  "license": "Apache License Version 2.0",
   "devDependencies": {
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-watch": "~0.5.3",
