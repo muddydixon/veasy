@@ -1,4 +1,3 @@
-
 unless d3?
   throw new Error 'veasy require d3.\nwrite <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>"'
   
@@ -7,6 +6,7 @@ unless $ or jQuery
 
 class Veasy
   constructor: (@$target, @opt = {})->
+    @id = "#{Date.now()}-#{$('svg').length}"
     @$target = $(@$target) unless $target instanceof jQuery
 
     @margin = @opt.margin or [50, 50]
@@ -18,7 +18,7 @@ class Veasy
     @xDefault = @opt.xDefault
     @yDefault = @opt.yDefault
 
-    @svg = d3.select(@$target.get(0)).append('svg')
+    @svg = d3.select(@$target.get(0)).append('svg').attr('id', @id)
       .attr('width', @width + @margin[0] * 2)
       .attr('height', @height + @margin[1] * 2)
       .append('g')
@@ -30,7 +30,7 @@ class Veasy
       @color = (d)-> @opt.color[d]
     else
       @color = d3.scale.category10()
-
+      
   #
   # ### accessors
   # 
@@ -74,35 +74,12 @@ class Veasy
       svg.selectAll(selector).style('opacity', opacity)
       d3.select(this)
         .style('opacity', 1.0)
+        
   clearInhibit: (selector)->
     svg = @svg
     (d)->
       svg.selectAll(selector).style('opacity', 1.0)
     
-  #
-  # ### tooltip
-  #
-  tooltipDefaultStyle:
-    width: 200
-    height: 100
-    fill: "white"
-    stroke: "grey"
-    
-  initToolTip: ()->
-    tooltip = @svg.append('g').attr('class', 'tooltip')
-    for attr, val of @tooltipDefaultStyle
-      tooltip.style(attr, @opt.tooltipStyle[attr] or val)
-    
-  showToolTip: (d)->
-    tooltip = @svg.select('g.tooltip')
-    tooltip = @initToolTip() unless tooltip.length
-    tooltip
-      .attr('x', d3.event.x)
-      .attr('y', d3.event.y)
-    
-  hideToolTip: ()->
-  moveToolTip: ()->
-
   #
   # ### errorHandler
   # 
@@ -119,7 +96,7 @@ class Veasy
   drawLine: (series, opt = {})->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Veasy.Option @opt, opt
+    opt = new Option @opt, opt
 
     for serie in series
       unless serie.data?
@@ -162,7 +139,36 @@ class Veasy
         .on('touchstart', @inhibitOther('path.line', 0.2))
         .on('mouseout', @clearInhibit('path.line'))
         .on('touchend', @clearInhibit('path.line'))
-
+        
+      dot = @svg.selectAll("circle.serie-#{idx}").data(serie.data).enter()
+        .append('circle').attr('class', "serie-#{idx}")
+        .attr('cx', (d)=> x(@_x(d)))
+        .attr('cy', (d)=> y(@_y(d)))
+        .attr('r', 5)
+        .attr('fill', serie.color)
+        .attr('stroke', 'none')
+        .attr('stroke-width', 3)
+        .style('cursor', 'pointer')
+      dot.on('mouseover', (d)=>
+        dom = d3.select(d3.event.target)
+        dom.attr('r', 7)
+          .attr('stroke', dom.attr('fill'))
+          .attr('fill', 'white')
+      ).on('mouseout', (d)=>
+        dom = d3.select(d3.event.target)
+        dom.attr('r', 5)
+          .attr('fill', dom.attr('stroke'))
+          .attr('stroke', 'none')
+      )
+      
+    if tooltipFormat = @opt.tooltip?.format
+      $("svg##{@id} circle").tipsy
+        gravity: 'w'
+        html: true
+        title: ()->
+          d = this.__data__
+          tooltipFormat(d)
+      
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
 
@@ -180,7 +186,7 @@ class Veasy
   drawBar: (series, opt = {})->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Veasy.Option @opt, opt
+    opt = new Option @opt, opt
     
     for serie in series
       unless serie.data?
@@ -271,7 +277,7 @@ class Veasy
   drawPie: (series, opt = {})->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Veasy.Option @opt, opt
+    opt = new Option @opt, opt
 
     for serie in series
       unless serie.data?
@@ -309,7 +315,7 @@ class Veasy
   # ### draw flow chart
   # 
   drawFlow: (data, opt = {})->
-    opt = new Veasy.Option @opt, opt
+    opt = new Option @opt, opt
     unless d3.sankey?
       throw new Error 'veasy require d3.sankey.\nuse d3.sankey (https://github.com/d3/d3-plugins/tree/master/sankey)'
     unless data.nodes and data.links
@@ -363,15 +369,14 @@ class Veasy
     # node.append('text')    
     # text
 
-class Veasy.Option
+Veasy.Option = class Option
   # overwrite value after options
   constructor: (opts...)->
     for opt in opts
       for k, v of opt
         this[k] = v
 
-    
-class Veasy.AccessorError extends Error
+Veasy.AccessorError = class AccessorError extends Error
   constructor: (x, y, data)->
     @message = ["accessor uncorrespoding to data"
       "= x ====="
