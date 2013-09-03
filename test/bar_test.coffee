@@ -18,7 +18,10 @@ describe 'bar chart', ->
 
   it 'basically point', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart
+    sales = new Veasy chart,
+      tooltip:
+        format: (d)->
+          d.value
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawBar pointData
 
@@ -34,15 +37,6 @@ describe 'bar chart', ->
       sales.drawBar pointData
     ).throw(Error)
 
-  it 'only one serie', ->
-    chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart
-    sales.x((d)-> d.label).y((d)-> d.value)
-    sales.drawBar pointData[0].data
-
-    bars = chart.find('rect.bar')
-    expect(bars).have.length 10
-    
   it 'transpose serie', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart,
@@ -57,8 +51,8 @@ describe 'bar chart', ->
     
   it 'custom color', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart, {color: monochrom}
-    sales.x((d)-> d.label).y((d)-> d.value)
+    sales = new Veasy chart
+    sales.color((d, idx, sid)-> monochrom[sid]).x((d)-> d.label).y((d)-> d.value)
     sales.drawBar pointData
   
     bars = chart.find('rect.bar')

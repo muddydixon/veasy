@@ -27,6 +27,16 @@ describe 'flow chart', ->
 
   it 'basically data', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart, {width: 300}
+    sales = new Veasy chart, {width: 500}
+    sales.drawFlow {nodes: fromNodes.concat(toNodes), links: links}
+
+  it 'basically data', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      width: 500
+      tooltip:
+        gravity: 'w'
+        format: (d)->
+          "#{d.name}"
     sales.drawFlow {nodes: fromNodes.concat(toNodes), links: links}
 

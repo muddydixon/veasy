@@ -18,7 +18,10 @@ describe 'pie chart', ->
 
   it 'basically point', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart
+    sales = new Veasy chart,
+      tooltip:
+        format: (d, id)->
+          "#{d.label}"
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawPie pointData
 
@@ -28,6 +31,27 @@ describe 'pie chart', ->
 
   it 'basically point with margin', ->
     chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      innerMargin: 20
+      tooltip:
+        gravity: "w"
+        format: (d, id)->
+          "label = #{d.label}"
+    sales.x((d)-> d.label).y((d)-> d.value).color((d, idx)-> monochrom[idx])
+    sales.drawPie pointData.slice(0, 3)
+    
+  it 'basically point with margin', ->
+    chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart, {innerMargin: 120}
     sales.x((d)-> d.label).y((d)-> d.value)
     sales.drawPie pointData.slice(0, 3)
+
+  it 'error uncorresponding accessor', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart
+    sales.x((d)-> d.zz).y((d)-> d.y)
+
+    expect(()->
+      sales.drawPie pointData
+    ).throw(Error)
+

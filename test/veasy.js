@@ -29,7 +29,13 @@ describe('bar chart', function() {
   it('basically point', function() {
     var chart, d, idx, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
+    sales = new Veasy(chart, {
+      tooltip: {
+        format: function(d) {
+          return d.value;
+        }
+      }
+    });
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -56,19 +62,6 @@ describe('bar chart', function() {
     return expect(function() {
       return sales.drawBar(pointData);
     })["throw"](Error);
-  });
-  it('only one serie', function() {
-    var bars, chart, sales;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
-    sales.x(function(d) {
-      return d.label;
-    }).y(function(d) {
-      return d.value;
-    });
-    sales.drawBar(pointData[0].data);
-    bars = chart.find('rect.bar');
-    return expect(bars).have.length(10);
   });
   it('transpose serie', function() {
     var chart, d, idx, sales, _i, _len, _results;
@@ -97,10 +90,10 @@ describe('bar chart', function() {
   it('custom color', function() {
     var bar, bars, chart, dat, idx, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart, {
-      color: monochrom
-    });
-    sales.x(function(d) {
+    sales = new Veasy(chart);
+    sales.color(function(d, idx, sid) {
+      return monochrom[sid];
+    }).x(function(d) {
       return d.label;
     }).y(function(d) {
       return d.value;
@@ -200,7 +193,7 @@ describe('chart', function() {
     expect(+svg.attr('width')).to.be.eql(400);
     return expect(+svg.attr('height')).to.be.eql(300);
   });
-  return it('height option', function() {
+  it('height option', function() {
     var sales, svg;
     sales = new Veasy(lineChart, {
       height: 200
@@ -208,6 +201,30 @@ describe('chart', function() {
     svg = $("#" + id).find('svg');
     expect(+svg.attr('width')).to.be.eql($("#" + id).width());
     return expect(+svg.attr('height')).to.be.eql(200);
+  });
+  return it('accessor', function() {
+    var sales;
+    sales = new Veasy(lineChart, {
+      height: 200
+    });
+    sales.x(function(d) {
+      return d.x;
+    });
+    expect(sales.x().toString()).to.be.eql((function(d) {
+      return d.x;
+    }).toString());
+    sales.y(function(d) {
+      return d.y;
+    });
+    expect(sales.y().toString()).to.be.eql((function(d) {
+      return d.y;
+    }).toString());
+    sales.color(function(d) {
+      return d.color;
+    });
+    return expect(sales.color().toString()).to.be.eql((function(d) {
+      return d.color;
+    }).toString());
   });
 });
 
@@ -244,11 +261,28 @@ describe('flow chart', function() {
       id: "" + baseid + "_" + this.__id__
     }).appendTo($('body'));
   });
+  it('basically data', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      width: 500
+    });
+    return sales.drawFlow({
+      nodes: fromNodes.concat(toNodes),
+      links: links
+    });
+  });
   return it('basically data', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
-      width: 300
+      width: 500,
+      tooltip: {
+        gravity: 'w',
+        format: function(d) {
+          return "" + d.name;
+        }
+      }
     });
     return sales.drawFlow({
       nodes: fromNodes.concat(toNodes),
@@ -360,37 +394,16 @@ describe('line chart', function() {
       return sales.drawLine(seriesData);
     })["throw"](Error);
   });
-  it('only one serie', function() {
-    var chart, format, lines, sales;
-    format = d3.time.format("%Y/%m/%d");
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart, {
-      tooltip: {
-        format: function(d) {
-          return "<ul><li>x = " + (format(d.time)) + "</li><li>y = " + d.value + "</li></ul>";
-        }
-      }
-    });
-    sales.x(function(d) {
-      return d.time;
-    }).y(function(d) {
-      return d.value;
-    });
-    sales.drawLine(seriesData[0].data);
-    lines = chart.find('path.line');
-    expect(lines).have.length(1);
-    return expect($(lines).attr('d')).not.contain("NaN");
-  });
   it('custom color', function() {
     var chart, idx, line, lines, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart, {
-      color: monochrom
-    });
+    sales = new Veasy(chart);
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {
       return d.value;
+    }).color(function(d, idx, sid) {
+      return monochrom[sid];
     });
     sales.drawLine(seriesData);
     lines = chart.find('path.line');
@@ -498,7 +511,13 @@ describe('pie chart', function() {
   it('basically point', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
+    sales = new Veasy(chart, {
+      tooltip: {
+        format: function(d, id) {
+          return "" + d.label;
+        }
+      }
+    });
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -506,7 +525,28 @@ describe('pie chart', function() {
     });
     return sales.drawPie(pointData);
   });
-  return it('basically point with margin', function() {
+  it('basically point with margin', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      innerMargin: 20,
+      tooltip: {
+        gravity: "w",
+        format: function(d, id) {
+          return "label = " + d.label;
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.label;
+    }).y(function(d) {
+      return d.value;
+    }).color(function(d, idx) {
+      return monochrom[idx];
+    });
+    return sales.drawPie(pointData.slice(0, 3));
+  });
+  it('basically point with margin', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
@@ -518,6 +558,182 @@ describe('pie chart', function() {
       return d.value;
     });
     return sales.drawPie(pointData.slice(0, 3));
+  });
+  return it('error uncorresponding accessor', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    sales.x(function(d) {
+      return d.zz;
+    }).y(function(d) {
+      return d.y;
+    });
+    return expect(function() {
+      return sales.drawPie(pointData);
+    })["throw"](Error);
+  });
+});
+
+describe('scatter plot', function() {
+  var baseid, id, monochrom, pointData, seriesData;
+  baseid = 'scatter';
+  id = 0;
+  seriesData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          time: new Date(2013, 0, i),
+          value: 0 | Math.random() * 500 + 500,
+          sales: 0 | Math.random() * 1000,
+          cost: 0 | Math.random() * 100,
+          country: 0 | Math.random() * 7
+        };
+      })
+    };
+  });
+  pointData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          x: 0 | Math.random() * 1000,
+          y: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      id: "" + baseid + "_" + this.__id__
+    }).appendTo($('body'));
+  });
+  it('basically series', function() {
+    var chart, color, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  it('basically series color accessor', function() {
+    var chart, color, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).color(function(d, idx) {
+      return color(d.sales);
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  it('basically series color accessor, size accessor', function() {
+    var chart, color, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).color(function(d, idx) {
+      return color(d.sales);
+    }).size(function(d) {
+      return d.cost;
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  it('basically series size accessor', function() {
+    var chart, color, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).size(function(d) {
+      return 0 | d.cost;
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  it('basically series symbol accessor', function() {
+    var chart, color, sales, symbol;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    symbol = d3.svg.symbolTypes;
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).size(function(d) {
+      return 0 | d.cost;
+    }).symbol(function(d, idx, sid) {
+      return symbol[sid % 7];
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  it('basically series symbol accessor', function() {
+    var chart, color, sales, symbol;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    symbol = d3.svg.symbolTypes;
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).size(function(d) {
+      return 0 | d.cost;
+    }).color(function(d, idx, sid) {
+      return color(d.sales);
+    }).symbol(function(d, idx, sid) {
+      return symbol[sid % 7];
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  return it('basically series symbol accessor', function() {
+    var chart, color, sales, symbol;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      tooltip: {
+        format: function(d, idx) {
+          return "sales: " + d.sales;
+        }
+      }
+    });
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    symbol = d3.svg.symbolTypes;
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).size(function(d) {
+      return d.sales / 5;
+    }).color(function(d, idx, sid) {
+      return color(d.sales);
+    });
+    return sales.drawScatterPlot(seriesData);
   });
 });
 

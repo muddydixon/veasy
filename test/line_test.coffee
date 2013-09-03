@@ -54,24 +54,10 @@ describe 'line chart', ->
       sales.drawLine seriesData
     ).throw(Error)
 
-  it 'only one serie', ->
-    format = d3.time.format("%Y/%m/%d")
-    chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart,
-      tooltip:
-        format: (d)-> "<ul><li>x = #{format(d.time)}</li><li>y = #{d.value}</li></ul>"
-    sales.x((d)-> d.time).y((d)-> d.value)
-    sales.drawLine seriesData[0].data
-
-    lines = chart.find('path.line')
-    expect(lines).have.length 1
-    expect($(lines).attr('d')).not.contain "NaN"
-
-    
   it 'custom color', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart, {color: monochrom}
-    sales.x((d)-> d.time).y((d)-> d.value)
+    sales = new Veasy chart
+    sales.x((d)-> d.time).y((d)-> d.value).color((d, idx, sid)-> monochrom[sid])
     sales.drawLine seriesData
   
     lines = chart.find('path.line')

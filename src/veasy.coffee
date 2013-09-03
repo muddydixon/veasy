@@ -13,8 +13,15 @@ class Veasy
     @width  = (@opt.width or @$target.width() or 400) - @margin[0] * 2
     @height = (@opt.height or 300) - @margin[1] * 2
 
-    @_x = null
-    @_y = null
+    @_x         = null
+    @_y         = null
+    @_symbol    = null
+    @_size      = null
+    @_value     = null
+    @_color     = null
+    @_dir       = null
+    @_texture   = null
+
     @xDefault = @opt.xDefault
     @yDefault = @opt.yDefault
 
@@ -26,11 +33,6 @@ class Veasy
       .attr('height', @height)
       .attr('transform', "translate(#{@margin[0]}, #{@margin[1]})")
 
-    if @opt.color? and @opt.color instanceof Array
-      @color = (d)-> @opt.color[d]
-    else
-      @color = d3.scale.category10()
-      
   #
   # ### accessors
   # 
@@ -42,7 +44,40 @@ class Veasy
   y: (y)->
     if not y?
       return @_y
-    @_y = y
+    if y instanceof Array
+      @_y = y[0]
+      @_ys = y
+    else
+      @_y = y
+    this
+  t: (t)->
+    if not t?
+      return @_t
+    @_t = t
+    this
+  color: (color)->
+    if not color?
+      return @_color
+    if typeof color is 'function'
+      @_color = color
+    else
+      @_color = ()-> color
+    this
+  size: (size)->
+    if not size?
+      return @_size
+    if typeof size is 'function'
+      @_size = size
+    else
+      @_size = ()-> size
+    this
+  symbol: (symbol)->
+    if not symbol?
+      return @_symbol
+    if typeof symbol is 'function'
+      @_symbol = symbol
+    else
+      @_symbol = ()-> symbol
     this
 
   #
@@ -57,9 +92,12 @@ class Veasy
     merged
 
   #
-  # ### checkAccessors
+  # ### isValidPositionAccessor
   #
-  checkAccessorValidation: (data)->
+  isValidPositionAccessor: (data)->
+    return @errorHandler new Error "accessor x required" unless @_x
+    return @errorHandler new Error "accessor y required" unless @_y
+    
     if typeof @_x(data) is 'undefined'
       return @errorHandler new Veasy.AccessorError @_x, @_y, data
     if typeof @_y(data) is 'undefined'
@@ -94,17 +132,10 @@ class Veasy
   # ### draw line chart
   # 
   drawLine: (series, opt = {})->
-    return @errorHandler new Error "accessor x required" unless @_x
-    return @errorHandler new Error "accessor y required" unless @_y
-    opt = new Option @opt, opt
-
-    for serie in series
-      unless serie.data?
-        series = [{name: "no name", data: series}]
-        break;
-    
     mergedSeries = @getMergedSeries series
-    @checkAccessorValidation mergedSeries[0]
+    if err = @isValidPositionAccessor mergedSeries[0]
+      return err
+    opt = new Option @opt, opt
 
     allXrange = d3.extent mergedSeries, @_x
     allYrange = d3.extent mergedSeries, @_y
@@ -126,13 +157,22 @@ class Veasy
       .x((d)=> x(@_x(d)))
       .y((d)=> y(@_y(d)))
 
-    for serie, idx in series
-      serie.color = serie.opt?.color or @color(idx)
-      l = @svg.append("path").attr('class', 'line')
+    category10 = d3.scale.category10()
+    series.forEach (serie, sid)=>
+      if @_color
+        color = (d, idx)=>
+          @_color(null, idx, sid)
+      else if serie.opt?.color?
+        color = (d, idx)-> serie.opt.color
+      else
+        color = (d, idx)->
+          category10(sid)
+          
+      l = @svg.append("path").attr('class', "line serie-#{sid}")
         .datum(if (sort = opt.sort) then serie.data.sort(sort) else serie.data)
         .attr("d", line)
         .attr("fill", "none")
-        .attr("stroke", serie.color)
+        .attr("stroke", color)
         .attr("stroke-width", 2)
         .style("cursor", 'pointer')
         .on('mouseover', @inhibitOther('path.line', 0.2))
@@ -140,30 +180,30 @@ class Veasy
         .on('mouseout', @clearInhibit('path.line'))
         .on('touchend', @clearInhibit('path.line'))
         
-      dot = @svg.selectAll("circle.serie-#{idx}").data(serie.data).enter()
-        .append('circle').attr('class', "serie-#{idx}")
+      dot = @svg.selectAll("circle.serie-#{sid}").data(serie.data).enter()
+        .append('circle').attr('class', "serie-#{sid}")
         .attr('cx', (d)=> x(@_x(d)))
         .attr('cy', (d)=> y(@_y(d)))
         .attr('r', 5)
-        .attr('fill', serie.color)
+        .attr('fill', color)
         .attr('stroke', 'none')
         .attr('stroke-width', 3)
         .style('cursor', 'pointer')
-      dot.on('mouseover', (d)=>
-        dom = d3.select(d3.event.target)
-        dom.attr('r', 7)
-          .attr('stroke', dom.attr('fill'))
-          .attr('fill', 'white')
-      ).on('mouseout', (d)=>
-        dom = d3.select(d3.event.target)
-        dom.attr('r', 5)
-          .attr('fill', dom.attr('stroke'))
-          .attr('stroke', 'none')
-      )
-      
+        .on('mouseover', (d)=>
+          dom = d3.select(d3.event.target)
+          dom.attr('r', 7)
+            .attr('stroke', dom.attr('fill'))
+            .attr('fill', 'white')
+        ).on('mouseout', (d)=>
+          dom = d3.select(d3.event.target)
+          dom.attr('r', 5)
+            .attr('fill', dom.attr('stroke'))
+            .attr('stroke', 'none')
+        )
+
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} circle").tipsy
-        gravity: 'w'
+        gravity: @opt.tooltip.gravity or "s"
         html: true
         title: ()->
           d = this.__data__
@@ -184,20 +224,11 @@ class Veasy
   # ### draw bar chart
   # 
   drawBar: (series, opt = {})->
-    return @errorHandler new Error "accessor x required" unless @_x
-    return @errorHandler new Error "accessor y required" unless @_y
+    mergedSeries = @getMergedSeries series
+    if err = @isValidPositionAccessor mergedSeries[0]
+      return err
     opt = new Option @opt, opt
     
-    for serie in series
-      unless serie.data?
-        series = [{name: "no name", data: series}]
-        break;
-    
-    self = this
-
-    mergedSeries = @getMergedSeries series
-    @checkAccessorValidation mergedSeries[0]
-
     allLabels = null
     do (mergedSeries)=>
       labels = {}
@@ -222,31 +253,48 @@ class Veasy
 
     bandWidth = x.rangeBand() / series.length
     
-    series.forEach (serie, idx)=>
-      serie.color = serie.opt?.color or @color(idx)
-      rect = @svg.selectAll("rect.bar.serie-#{idx}").data(serie.data).enter()
-        .append("rect").attr("class", "bar serie-#{idx}")
+    category10 = d3.scale.category10()
+    series.forEach (serie, sid)=>
+      if @_color
+        color = (d, idx)=>
+          @_color(d, idx, sid)
+      else if serie.opt?.color?
+        color = (d, idx)-> serie.opt.color
+      else
+        color = (d, idx)->
+          category10(sid)
+          
+      rect = @svg.selectAll("rect.bar.serie-#{sid}").data(serie.data).enter()
+        .append("rect").attr("class", "bar serie-#{sid}")
 
       if opt.transpose
         rect
           .attr("x", 0)
           .attr("width", (d)=> y(@_y(d)))
-          .attr("y", (d)=> x(@_x(d)) + idx * bandWidth)
+          .attr("y", (d)=> x(@_x(d)) + sid * bandWidth)
           .attr("height", bandWidth)
       else
         rect
-          .attr("x", (d)=> x(@_x(d)) + idx * bandWidth)
+          .attr("x", (d)=> x(@_x(d)) + sid * bandWidth)
           .attr("width", bandWidth)
           .attr("y", (d)=> y(@_y(d)))
           .attr("height", (d)=> @height - y(@_y(d)))
         
       rect
         .style("cursor", 'pointer')
-        .attr("fill", serie.color)
+        .attr("fill", color)
         .on('mouseover', @inhibitOther('rect.bar'))
         .on('touchstart', @inhibitOther('rect.bar'))
         .on('mouseout', @clearInhibit('rect.bar'))
         .on('touchend', @clearInhibit('rect.bar'))
+        
+    if tooltipFormat = @opt.tooltip?.format
+      $("svg##{@id} rect").tipsy
+        gravity: @opt.tooltip.gravity or if opt.transpose then 'w' else 's'
+        html: true
+        title: ()->
+          d = this.__data__
+          tooltipFormat(d)
 
     if opt.transpose
       xaxis = d3.svg.axis().scale(x).orient("left")
@@ -275,15 +323,11 @@ class Veasy
   # ### draw pie chart
   # 
   drawPie: (series, opt = {})->
-    return @errorHandler new Error "accessor x required" unless @_x
-    return @errorHandler new Error "accessor y required" unless @_y
+    mergedSeries = @getMergedSeries series
+    if err = @isValidPositionAccessor mergedSeries[0]
+      return err
     opt = new Option @opt, opt
-
-    for serie in series
-      unless serie.data?
-        series = [{name: "no name", data: series}]
-        break
-
+    
     radius = Math.min(@width / series.length, @height) / 2
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
@@ -292,25 +336,41 @@ class Veasy
       .rangeBands([0, @width], 0.1)
       .domain((serie.name for serie in series))
 
-    series.forEach (serie, idx)=>
-      color = d3.scale.category10()
+    category10 = d3.scale.category10()
+    series.forEach (serie, sid)=>
+      if @_color
+        color = @_color
+      else if serie.opt?.color?
+        color = (d, idx)-> serie.opt.color
+      else
+        color = (d, idx)->
+          category10(idx)
       arc = d3.svg.arc()
         .outerRadius(radius - outerMargin)
         .innerRadius(innerMargin)
       pie = d3.layout.pie().sort(null).value(@_y)
 
-      g = @svg.selectAll("g.arc.serie-#{idx}").data(pie(serie.data)).enter()
-        .append('g').attr('class', "arc serie-#{idx}")
+      g = @svg.selectAll("g.arc.serie-#{sid}").data(pie(serie.data)).enter()
+        .append('g').attr('class', "arc serie-#{sid}")
         .attr('transform', "translate(#{radius + x(serie.name)},#{radius})")
       g.append('path')
         .attr('d', arc)
-        .attr('fill', (d, i)=> color(i))
+        .attr('fill', color)
         .style("cursor", 'pointer')
       g
         .on('mouseover', @inhibitOther('g.arc'))
         .on('touchstart', @inhibitOther('g.arc'))
         .on('mouseout', @clearInhibit('g.arc'))
         .on('touchend', @clearInhibit('g.arc'))
+        
+    if tooltipFormat = @opt.tooltip?.format
+      $("svg##{@id} path").tipsy
+        gravity: @opt.tooltip.gravity or "s"
+        html: true
+        title: ()->
+          d = this.__data__.data
+          tooltipFormat(d)
+
   #
   # ### draw flow chart
   # 
@@ -369,6 +429,112 @@ class Veasy
     # node.append('text')    
     # text
 
+    if tooltipFormat = @opt.tooltip?.format
+      $("svg##{@id} g.node rect").tipsy
+        gravity: @opt.tooltip.gravity or "s"
+        html: true
+        title: ()->
+          d = this.__data__
+          tooltipFormat(d)
+          
+      $("svg##{@id} path.link").tipsy
+        gravity: @opt.tooltip.gravity or "s"
+        html: true
+        title: ()->
+          d = this.__data__
+          tooltipFormat(d)
+          
+  #
+  # ### draw scatterPlot
+  # 
+  drawScatterPlot: (series, opt = {})->
+    mergedSeries = @getMergedSeries series
+    if error = @isValidPositionAccessor(mergedSeries[0])
+      return @errorHandler error
+
+    opt = new Option @opt, opt
+        
+    allXrange = d3.extent mergedSeries, @_x
+    allYrange = d3.extent mergedSeries, @_y
+
+    xType = @_x(mergedSeries[0]).constructor
+    yType = Number
+
+    xScale = opt.xscale or "linear"
+    yScale = opt.yscale or "linear"
+
+    x = if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
+    x.domain(opt.xlim or d3.extent(allXrange))
+      .range([0, @width])
+    y = d3.scale[yScale]()
+    y.domain(opt.ylim or d3.extent(allYrange))
+      .range([@height, 0])
+
+    category10 = d3.scale.category10()
+    series.forEach (serie, sid)=>
+      sym = d3.svg.symbol().type('circle')
+      
+      if @_color?
+        color = (d, idx)=>
+          @_color(d, idx, sid)
+      else
+        color = (d, idx)->
+          category10(sid)
+      if @_symbol?
+        symbol = (d, idx)=>
+          @_symbol(d, idx, sid)
+      
+      point = @svg.selectAll("path.plot.serie-#{sid}").data(serie.data).enter()
+        .append('path').attr('class', "plot serie-#{sid}")
+        .attr('d', (d, idx)=>
+          sym.size(@_size?(d) or 48).type(symbol?(d, idx) or 'circle')(d))
+        .attr('transform', (d)=> "translate(#{x(@_x(d))},#{y(@_y(d))})")
+        .attr('fill', color)
+    
+      if tooltipFormat = @opt.tooltip?.format
+        $("svg##{@id} path.plot.serie-#{sid}").tipsy
+          gravity: @opt.tooltip.gravity or "s"
+          html: true
+          title: ()->
+            d = this.__data__
+            tooltipFormat(d)
+          
+    xaxis = d3.svg.axis().scale(x)
+    yaxis = d3.svg.axis().scale(y).orient("left")
+
+    xAxis = @svg.append("g").call(xaxis)
+      .attr("transform", "translate(0,#{@height})")
+      .selectAll("path")
+      .attr("fill", "none").attr("stroke", "black")
+    yAxis = @svg.append("g").call(yaxis)
+      .selectAll("path")
+      .attr("fill", "none").attr("stroke", "black")
+    
+  #
+  # ### draw scatterMatrix
+  # 
+  drawScatterMatrix: (data, opt = {})->
+    
+  #
+  # ### draw bubble
+  # 
+  drawBubble: (data, opt = {})->
+    
+  #
+  # ### draw colored table
+  # 
+  drawColoredTable: (data, opt = {})->
+    table = d3.select(@$target.get(0)).append('table')
+
+    tr = table.selectAll('tr').data(data).enter()
+      .append('tr')
+
+    tr.selectAll('td').data((d)-> d.data).enter()
+      .append('td')
+      .text((d)=>
+        @_y(d)
+      )
+          
 Veasy.Option = class Option
   # overwrite value after options
   constructor: (opts...)->
