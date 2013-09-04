@@ -4,6 +4,62 @@ mocha.setup("bdd");
 
 expect = chai.expect;
 
+describe('area chart', function() {
+  var baseid, id, monochrom, pointData, seriesData;
+  baseid = 'area';
+  id = 0;
+  seriesData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          time: new Date(2013, 0, i),
+          value: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  pointData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          x: 0 | Math.random() * 1000,
+          y: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      id: "" + baseid + "_" + this.__id__
+    }).appendTo($('body'));
+  });
+  return it('basically series', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    return sales.drawArea(seriesData);
+  });
+});
+
 describe('bar chart', function() {
   var baseid, id, monochrom, pointData;
   baseid = 'bar';
@@ -823,6 +879,62 @@ describe('scatter plot', function() {
       return color(d.sales);
     });
     return sales.drawScatterPlot(seriesData);
+  });
+});
+
+describe('stack chart', function() {
+  var baseid, id, monochrom, pointData, seriesData;
+  baseid = 'stack';
+  id = 0;
+  seriesData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          time: new Date(2013, 0, i),
+          value: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  pointData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          x: 0 | Math.random() * 1000,
+          y: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      id: "" + baseid + "_" + this.__id__
+    }).appendTo($('body'));
+  });
+  return it('basically series', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    return sales.drawStack(seriesData);
   });
 });
 

@@ -226,6 +226,188 @@ class Veasy
         .attr("fill", "none").attr("stroke", "black")
     
   #
+  # ### draw area chart
+  # 
+  drawArea: (series, opt = {})->
+    mergedSeries = @getMergedSeries series
+    if err = @isValidPositionAccessor mergedSeries[0]
+      return err
+    opt = new Option @opt, opt
+
+    allXrange = d3.extent mergedSeries, @_x
+    allYrange = d3.extent mergedSeries, @_y
+
+    xType = @_x(mergedSeries[0]).constructor
+    yType = Number
+
+    xScale = opt.xscale or "linear"
+    yScale = opt.yscale or "linear"
+
+    @xScale = x =
+      if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
+    x.domain(opt.xlim or d3.extent(allXrange))
+      .range([0, @width])
+    @yScale = y = d3.scale[yScale]()
+    y.domain(opt.ylim or d3.extent(allYrange))
+      .range([@height, 0])
+
+    area = d3.svg.area()
+      .x((d)=> x(@_x(d)))
+      .y0(@height)
+      .y1((d)=> y(@_y(d)))
+
+    category10 = d3.scale.category10()
+    series.forEach (serie, sid)=>
+      if @_color
+        color = (d, idx)=>
+          @_color(null, idx, sid)
+      else if serie.opt?.color?
+        color = (d, idx)-> serie.opt.color
+      else
+        color = (d, idx)->
+          category10(sid)
+          
+      l = @svg.append("path").attr('class', "area serie-#{sid}")
+        .datum(if (sort = opt.sort) then serie.data.sort(sort) else serie.data)
+        .attr("d", area)
+        .attr("fill", color)
+        .attr("stroke", "none")
+        .style("cursor", 'pointer')
+        .on('mouseover', @inhibitOther('path.area', 0.2))
+        .on('touchstart', @inhibitOther('path.area', 0.2))
+        .on('mouseout', @clearInhibit('path.area'))
+        .on('touchend', @clearInhibit('path.area'))
+
+      dot = @svg.selectAll("circle.serie-#{sid}").data(serie.data).enter()
+        .append('circle').attr('class', "serie-#{sid}")
+        .attr('cx', (d)=> x(@_x(d)))
+        .attr('cy', (d)=> y(@_y(d)))
+        .attr('r', (@opt.withPoint? and 5) or 1)
+        .attr('fill', color)
+        .attr('stroke', 'none')
+        .attr('stroke-width', 3)
+        .style('cursor', 'pointer')
+      if @opt.withPoint
+        dot.on('mouseover', (d)=>
+          dom = d3.select(d3.event.target)
+          dom.attr('r', 7)
+            .attr('stroke', dom.attr('fill'))
+            .attr('fill', 'white')
+        ).on('mouseout', (d)=>
+          dom = d3.select(d3.event.target)
+          dom.attr('r', 5)
+            .attr('fill', dom.attr('stroke'))
+            .attr('stroke', 'none')
+        )
+
+    if tooltipFormat = @opt.tooltip?.format
+      $("svg##{@id} circle").tipsy
+        gravity: @opt.tooltip.gravity or "s"
+        html: true
+        title: ()->
+          d = this.__data__
+          tooltipFormat(d)
+      
+    xaxis = d3.svg.axis().scale(x)
+    yaxis = d3.svg.axis().scale(y).orient("left")
+
+    if not @svg.select('g.xaxis')[0][0]
+      xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+        .attr("transform", "translate(0,#{@height})")
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+      yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+
+  #
+  # ### draw stack chart
+  #     
+  drawStack: (series, opt = {})->
+    mergedSeries = @getMergedSeries series
+    if err = @isValidPositionAccessor mergedSeries[0]
+      return err
+    opt = new Option @opt, opt
+
+    allXrange = d3.extent mergedSeries, @_x
+    allYrange = d3.extent mergedSeries, @_y
+
+    xType = @_x(mergedSeries[0]).constructor
+    yType = Number
+
+    xScale = opt.xscale or "linear"
+    yScale = opt.yscale or "linear"
+
+    @xScale = x =
+      if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
+    x.domain(opt.xlim or d3.extent(allXrange))
+      .range([0, @width])
+    @yScale = y = d3.scale[yScale]()
+    y.domain(opt.ylim or d3.extent(allYrange))
+      .range([@height, 0])
+
+    stack = d3.layout.stack()
+      .values((d)-> d.data).y(@_y).x(@_x)
+
+    console.log stack(series)
+    area = d3.svg.area()
+      .x((d)=> x(@_x(d)))
+      .y0((d)-> y(d.y0))
+      .y1((d)=> y(d.y0 + d.y))
+
+    category10 = d3.scale.category10()
+    if @_color
+      color = (d, idx, sid)=>
+        @_color(null, idx, sid)
+    else
+      color = (d, idx, sid)->
+        category10(sid)
+
+    l = @svg.selectAll("path.stack").data(stack(series)).enter()
+      .append("path").attr('class', (d, sid)-> "stack serie-#{sid}")
+      .attr("d", (d)-> area(d.data))
+      .attr("fill", (d, sid)-> color(d, null, sid))
+      .attr("stroke", "none")
+      .style("cursor", 'pointer')
+      .on('mouseover', @inhibitOther('path.stack', 0.2))
+      .on('touchstart', @inhibitOther('path.stack', 0.2))
+      .on('mouseout', @clearInhibit('path.stack'))
+      .on('touchend', @clearInhibit('path.stack'))
+
+    # series.forEach (serie, sid)=>
+    #   if @_color
+    #     color = (d, idx)=>
+    #       @_color(null, idx, sid)
+    #   else if serie.opt?.color?
+    #     color = (d, idx)-> serie.opt.color
+    #   else
+    #     color = (d, idx)->
+    #       category10(sid)
+          
+    #   l = @svg.append("path").attr('class', "stack serie-#{sid}")
+    #     .datum(stack(if (sort = opt.sort) then serie.data.sort(sort) else serie.data))
+    #     .attr("d", area)
+    #     .attr("fill", color)
+    #     .attr("stroke", "none")
+    #     .style("cursor", 'pointer')
+    #     .on('mouseover', @inhibitOther('path.stack', 0.2))
+    #     .on('touchstart', @inhibitOther('path.stack', 0.2))
+    #     .on('mouseout', @clearInhibit('path.stack'))
+    #     .on('touchend', @clearInhibit('path.stack'))
+
+    xaxis = d3.svg.axis().scale(x)
+    yaxis = d3.svg.axis().scale(y).orient("left")
+
+    if not @svg.select('g.xaxis')[0][0]
+      xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+        .attr("transform", "translate(0,#{@height})")
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+      yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+    
+  #
   # ### draw bar chart
   # 
   drawBar: (series, opt = {})->
