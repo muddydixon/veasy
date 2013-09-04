@@ -31,10 +31,25 @@ describe 'line chart', ->
     for line, idx in lines
       expect($(line).attr('d')).not.contain "NaN"
 
-  it 'basically point', ->
+  it 'basically point data', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart,
       sort: (a, b)-> a.x - b.x
+      tooltip:
+        format: (d)-> "x = #{d.x}"
+    sales.x((d)-> d.x).y((d)-> d.y)
+    sales.drawLine pointData
+
+    lines = chart.find('path.line') 
+    expect(lines).have.length 4
+    for line, idx in lines
+      expect($(line).attr('d')).not.contain "NaN"
+    
+  it 'basically point　data with point', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      sort: (a, b)-> a.x - b.x
+      withPoint: true
       tooltip:
         format: (d)-> "x = #{d.x}"
     sales.x((d)-> d.x).y((d)-> d.y)

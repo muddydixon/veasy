@@ -353,13 +353,42 @@ describe('line chart', function() {
     }
     return _results;
   });
-  it('basically point', function() {
+  it('basically point data', function() {
     var chart, idx, line, lines, sales, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
       sort: function(a, b) {
         return a.x - b.x;
       },
+      tooltip: {
+        format: function(d) {
+          return "x = " + d.x;
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.x;
+    }).y(function(d) {
+      return d.y;
+    });
+    sales.drawLine(pointData);
+    lines = chart.find('path.line');
+    expect(lines).have.length(4);
+    _results = [];
+    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+      line = lines[idx];
+      _results.push(expect($(line).attr('d')).not.contain("NaN"));
+    }
+    return _results;
+  });
+  it('basically point　data with point', function() {
+    var chart, idx, line, lines, sales, _i, _len, _results;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      sort: function(a, b) {
+        return a.x - b.x;
+      },
+      withPoint: true,
       tooltip: {
         format: function(d) {
           return "x = " + d.x;
@@ -439,6 +468,66 @@ describe('line chart', function() {
       _results.push(expect($(line).attr('stroke')).to.be.eql(monochrom[idx]));
     }
     return _results;
+  });
+});
+
+describe('multiple chart', function() {
+  var baseid, id, monochrom, pointData, seriesData;
+  baseid = 'multi';
+  id = 0;
+  seriesData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          time: new Date(2013, 0, i),
+          value: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  pointData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          x: 0 | Math.random() * 1000,
+          y: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      id: "" + baseid + "_" + this.__id__
+    }).appendTo($('body'));
+  });
+  return it('multiple series', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      height: 800,
+      margin: [50, 300]
+    });
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    sales.drawBar(seriesData);
+    return sales.drawScatterPlot(seriesData);
   });
 });
 

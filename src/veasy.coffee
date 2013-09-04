@@ -25,13 +25,15 @@ class Veasy
     @xDefault = @opt.xDefault
     @yDefault = @opt.yDefault
 
-    @svg = d3.select(@$target.get(0)).append('svg').attr('id', @id)
-      .attr('width', @width + @margin[0] * 2)
-      .attr('height', @height + @margin[1] * 2)
-      .append('g')
-      .attr('width', @width)
-      .attr('height', @height)
-      .attr('transform', "translate(#{@margin[0]}, #{@margin[1]})")
+    @svg = d3.select(@$target.get(0)).select('svg')
+    if not @svg[0][0]?
+      @svg = d3.select(@$target.get(0)).append('svg').attr('id', @id)
+        .attr('width', @width + @margin[0] * 2)
+        .attr('height', @height + @margin[1] * 2)
+        .append('g')
+        .attr('width', @width)
+        .attr('height', @height)
+        .attr('transform', "translate(#{@margin[0]}, #{@margin[1]})")
 
   #
   # ### accessors
@@ -146,10 +148,11 @@ class Veasy
     xScale = opt.xscale or "linear"
     yScale = opt.yscale or "linear"
 
-    x = if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
+    @xScale = x =
+      if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
     x.domain(opt.xlim or d3.extent(allXrange))
       .range([0, @width])
-    y = d3.scale[yScale]()
+    @yScale = y = d3.scale[yScale]()
     y.domain(opt.ylim or d3.extent(allYrange))
       .range([@height, 0])
 
@@ -179,17 +182,18 @@ class Veasy
         .on('touchstart', @inhibitOther('path.line', 0.2))
         .on('mouseout', @clearInhibit('path.line'))
         .on('touchend', @clearInhibit('path.line'))
-        
+
       dot = @svg.selectAll("circle.serie-#{sid}").data(serie.data).enter()
         .append('circle').attr('class', "serie-#{sid}")
         .attr('cx', (d)=> x(@_x(d)))
         .attr('cy', (d)=> y(@_y(d)))
-        .attr('r', 5)
+        .attr('r', (@opt.withPoint? and 5) or 1)
         .attr('fill', color)
         .attr('stroke', 'none')
         .attr('stroke-width', 3)
         .style('cursor', 'pointer')
-        .on('mouseover', (d)=>
+      if @opt.withPoint
+        dot.on('mouseover', (d)=>
           dom = d3.select(d3.event.target)
           dom.attr('r', 7)
             .attr('stroke', dom.attr('fill'))
@@ -212,13 +216,14 @@ class Veasy
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
 
-    xAxis = @svg.append("g").call(xaxis)
-      .attr("transform", "translate(0,#{@height})")
-      .selectAll("path")
-      .attr("fill", "none").attr("stroke", "black")
-    yAxis = @svg.append("g").call(yaxis)
-      .selectAll("path")
-      .attr("fill", "none").attr("stroke", "black")
+    if not @svg.select('g.xaxis')[0][0]
+      xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+        .attr("transform", "translate(0,#{@height})")
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+      yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
     
   #
   # ### draw bar chart
@@ -239,8 +244,8 @@ class Veasy
     xType = String
     yType = Number
     
-    x = d3.scale.ordinal()
-    y = d3.scale[opt.yscale or "linear"]()
+    @xScale = x = d3.scale.ordinal()
+    @yScale = y = d3.scale[opt.yscale or "linear"]()
 
     if opt.transpose
       x.rangeBands([0, @height], 0.1).domain(allLabels)
@@ -296,28 +301,29 @@ class Veasy
           d = this.__data__
           tooltipFormat(d)
 
-    if opt.transpose
-      xaxis = d3.svg.axis().scale(x).orient("left")
-      yaxis = d3.svg.axis().scale(y)
+    if not @svg.select('g.xaxis')[0][0]
+      if opt.transpose
+        xaxis = d3.svg.axis().scale(x).orient("left")
+        yaxis = d3.svg.axis().scale(y)
 
-      xAxis = @svg.append("g").call(xaxis)
-        .selectAll("path")
-        .attr("fill", "none").attr("stroke", "black")
-      yAxis = @svg.append("g").call(yaxis)
-        .attr("transform", "translate(0,#{@height})")
-        .selectAll("path")
-        .attr("fill", "none").attr("stroke", "black")
-    else
-      xaxis = d3.svg.axis().scale(x)
-      yaxis = d3.svg.axis().scale(y).orient("left")
+        xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+          .selectAll("path")
+          .attr("fill", "none").attr("stroke", "black")
+        yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+          .attr("transform", "translate(0,#{@height})")
+          .selectAll("path")
+          .attr("fill", "none").attr("stroke", "black")
+      else
+        xaxis = d3.svg.axis().scale(x)
+        yaxis = d3.svg.axis().scale(y).orient("left")
 
-      xAxis = @svg.append("g").call(xaxis)
-        .attr("transform", "translate(0,#{@height})")
-        .selectAll("path")
-        .attr("fill", "none").attr("stroke", "black")
-      yAxis = @svg.append("g").call(yaxis)
-        .selectAll("path")
-        .attr("fill", "none").attr("stroke", "black")
+        xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+        xAxis.attr("transform", "translate(0,#{@height})")
+          .selectAll("path")
+          .attr("fill", "none").attr("stroke", "black")
+        yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+          .selectAll("path")
+          .attr("fill", "none").attr("stroke", "black")
 
   #
   # ### draw pie chart
@@ -332,7 +338,7 @@ class Veasy
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
 
-    x = d3.scale.ordinal()
+    @xScale = x = d3.scale.ordinal()
       .rangeBands([0, @width], 0.1)
       .domain((serie.name for serie in series))
 
@@ -463,10 +469,10 @@ class Veasy
     xScale = opt.xscale or "linear"
     yScale = opt.yscale or "linear"
 
-    x = if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
+    @xScale = x = if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
     x.domain(opt.xlim or d3.extent(allXrange))
       .range([0, @width])
-    y = d3.scale[yScale]()
+    @yScale = y = d3.scale[yScale]()
     y.domain(opt.ylim or d3.extent(allYrange))
       .range([@height, 0])
 
@@ -502,13 +508,14 @@ class Veasy
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
 
-    xAxis = @svg.append("g").call(xaxis)
-      .attr("transform", "translate(0,#{@height})")
-      .selectAll("path")
-      .attr("fill", "none").attr("stroke", "black")
-    yAxis = @svg.append("g").call(yaxis)
-      .selectAll("path")
-      .attr("fill", "none").attr("stroke", "black")
+    if not @svg.select('g.xaxis')[0][0]
+      xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+        .attr("transform", "translate(0,#{@height})")
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+      yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+        .selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
     
   #
   # ### draw scatterMatrix
