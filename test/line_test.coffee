@@ -94,3 +94,23 @@ describe 'line chart', ->
     for line, idx in lines
       expect($(line).attr('stroke')).to.be.eql monochrom[idx]
 
+  it 'with xaxis format', ->
+    ymd = d3.time.format('%y/%m/%d')
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      axis:
+        x:
+          format: (d)->
+            ymd(d)
+        y:
+          format: (d)->
+            "#{d}円"
+            
+    sales.x((d)-> d.time).y((d)-> d.value)
+    sales.drawLine seriesData
+
+    lines = chart.find('path.line') 
+    expect(lines).have.length 4
+    for line, idx in lines
+      expect($(line).attr('d')).not.contain "NaN"
+

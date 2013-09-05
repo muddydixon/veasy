@@ -215,6 +215,8 @@ class Veasy
       
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
+    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
+    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
 
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
@@ -310,6 +312,8 @@ class Veasy
       
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
+    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
+    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
 
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
@@ -397,6 +401,8 @@ class Veasy
 
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
+    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
+    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
 
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
@@ -487,6 +493,8 @@ class Veasy
       if opt.transpose
         xaxis = d3.svg.axis().scale(x).orient("left")
         yaxis = d3.svg.axis().scale(y)
+        xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
+        yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
 
         xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
           .selectAll("path")
@@ -498,6 +506,8 @@ class Veasy
       else
         xaxis = d3.svg.axis().scale(x)
         yaxis = d3.svg.axis().scale(y).orient("left")
+        xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
+        yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
 
         xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         xAxis.attr("transform", "translate(0,#{@height})")
@@ -689,6 +699,8 @@ class Veasy
           
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
+    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
+    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
 
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)

@@ -500,7 +500,7 @@ describe('line chart', function() {
     }
     return _results;
   });
-  return it('custom color of each serie', function() {
+  it('custom color of each serie', function() {
     var chart, idx, line, lines, sales, serie, _i, _j, _len, _len1, _results;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart);
@@ -522,6 +522,39 @@ describe('line chart', function() {
     for (idx = _j = 0, _len1 = lines.length; _j < _len1; idx = ++_j) {
       line = lines[idx];
       _results.push(expect($(line).attr('stroke')).to.be.eql(monochrom[idx]));
+    }
+    return _results;
+  });
+  return it('with xaxis format', function() {
+    var chart, idx, line, lines, sales, ymd, _i, _len, _results;
+    ymd = d3.time.format('%y/%m/%d');
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      axis: {
+        x: {
+          format: function(d) {
+            return ymd(d);
+          }
+        },
+        y: {
+          format: function(d) {
+            return "" + d + "円";
+          }
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    sales.drawLine(seriesData);
+    lines = chart.find('path.line');
+    expect(lines).have.length(4);
+    _results = [];
+    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+      line = lines[idx];
+      _results.push(expect($(line).attr('d')).not.contain("NaN"));
     }
     return _results;
   });
