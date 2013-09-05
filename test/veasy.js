@@ -45,7 +45,7 @@ describe('area chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   return it('basically series', function() {
     var chart, sales;
@@ -80,7 +80,7 @@ describe('bar chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   it('basically point', function() {
     var chart, d, idx, sales, _i, _len, _results;
@@ -235,7 +235,7 @@ describe('chart', function() {
   beforeEach(function() {
     return lineChart = $('<div>', {
       id: id
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   afterEach(function() {
     return typeof lineChart.remove === "function" ? lineChart.remove() : void 0;
@@ -315,7 +315,7 @@ describe('flow chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   it('basically data', function() {
     var chart, sales;
@@ -388,7 +388,7 @@ describe('line chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   it('basically series', function() {
     var chart, idx, line, lines, sales, _i, _len, _results;
@@ -601,7 +601,7 @@ describe('multiple chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   return it('multiple series', function() {
     var chart, sales;
@@ -684,7 +684,7 @@ describe('pie chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   it('basically point', function() {
     var chart, sales;
@@ -796,7 +796,7 @@ describe('scatter plot', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   it('basically series', function() {
     var chart, color, sales;
@@ -956,10 +956,10 @@ describe('stack chart', function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
-    }).appendTo($('body'));
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
   return it('basically series', function() {
-    var chart, sales;
+    var chart, idx, sales, stack, stacks, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart);
     sales.x(function(d) {
@@ -967,7 +967,15 @@ describe('stack chart', function() {
     }).y(function(d) {
       return d.value;
     });
-    return sales.drawStack(seriesData);
+    sales.drawStack(seriesData);
+    stacks = chart.find('path.stack');
+    expect(stacks).have.length(4);
+    _results = [];
+    for (idx = _i = 0, _len = stacks.length; _i < _len; idx = ++_i) {
+      stack = stacks[idx];
+      _results.push(expect($(stack).attr('d')).not.contain("NaN"));
+    }
+    return _results;
   });
 });
 

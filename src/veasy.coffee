@@ -336,6 +336,10 @@ class Veasy
     allXrange = d3.extent mergedSeries, @_x
     allYrange = d3.extent mergedSeries, @_y
 
+    rangeInEachX = d3.nest().key(@_x)
+      .rollup((vals)=> vals.reduce(((p, c)=> p + @_y(c)), 0) )
+      .entries(mergedSeries)
+
     xType = @_x(mergedSeries[0]).constructor
     yType = Number
 
@@ -347,17 +351,17 @@ class Veasy
     x.domain(opt.xlim or d3.extent(allXrange))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYrange))
-      .range([@height, 0])
+    y.range([@height, 0])
 
     stack = d3.layout.stack()
-      .values((d)-> d.data).y(@_y).x(@_x)
+      .offset('expand')
+      .values((d)-> d.data)
+      .y(@_y).x(@_x)
 
-    console.log stack(series)
     area = d3.svg.area()
       .x((d)=> x(@_x(d)))
       .y0((d)-> y(d.y0))
-      .y1((d)=> y(d.y0 + d.y))
+      .y1((d, idx)=> y(d.y0 + d.y))
 
     category10 = d3.scale.category10()
     if @_color
@@ -377,27 +381,6 @@ class Veasy
       .on('touchstart', @inhibitOther('path.stack', 0.2))
       .on('mouseout', @clearInhibit('path.stack'))
       .on('touchend', @clearInhibit('path.stack'))
-
-    # series.forEach (serie, sid)=>
-    #   if @_color
-    #     color = (d, idx)=>
-    #       @_color(null, idx, sid)
-    #   else if serie.opt?.color?
-    #     color = (d, idx)-> serie.opt.color
-    #   else
-    #     color = (d, idx)->
-    #       category10(sid)
-          
-    #   l = @svg.append("path").attr('class', "stack serie-#{sid}")
-    #     .datum(stack(if (sort = opt.sort) then serie.data.sort(sort) else serie.data))
-    #     .attr("d", area)
-    #     .attr("fill", color)
-    #     .attr("stroke", "none")
-    #     .style("cursor", 'pointer')
-    #     .on('mouseover', @inhibitOther('path.stack', 0.2))
-    #     .on('touchstart', @inhibitOther('path.stack', 0.2))
-    #     .on('mouseout', @clearInhibit('path.stack'))
-    #     .on('touchend', @clearInhibit('path.stack'))
 
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
