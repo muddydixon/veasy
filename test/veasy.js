@@ -752,6 +752,69 @@ describe('pie chart', function() {
   });
 });
 
+describe('scatter matrix', function() {
+  var baseid, id, monochrom, pointData, seriesData;
+  baseid = 'scattermatrix';
+  id = 0;
+  seriesData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          time: new Date(2013, 0, i),
+          value: Math.random() * 0.1 + Math.sin(i),
+          sales: Math.random() * 0.1 + Math.cos(i),
+          cost: 0 | Math.random() * 100,
+          country: 0 | Math.random() * 7
+        };
+      })
+    };
+  });
+  pointData = [0, 1, 2, 3].map(function(id) {
+    var _i, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          x: 0 | Math.random() * 1000,
+          y: 0 | Math.random() * 1000
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      id: "" + baseid + "_" + this.__id__
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
+  });
+  return it('basically series', function() {
+    var chart, color, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      height: 800,
+      width: 800
+    });
+    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"]);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    return sales.drawScatterMatrix(seriesData[0]);
+  });
+});
+
 describe('scatter plot', function() {
   var baseid, id, monochrom, pointData, seriesData;
   baseid = 'scatter';

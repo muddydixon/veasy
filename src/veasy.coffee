@@ -1,6 +1,6 @@
 unless d3?
   throw new Error 'veasy require d3.\nwrite <script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>"'
-  
+
 unless $ or jQuery
   throw new Error 'veasy require jquery.\nwrite <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" charset="utf-8"></script>"'
 
@@ -37,7 +37,7 @@ class Veasy
 
   #
   # ### accessors
-  # 
+  #
   x: (x)->
     if not x?
       return @_x
@@ -84,9 +84,9 @@ class Veasy
 
   #
   # ### getMergedSeries
-  # 
+  #
   # get merged all series data to range
-  # 
+  #
   getMergedSeries: (series)->
     merged = []
     for serie in series
@@ -99,7 +99,7 @@ class Veasy
   isValidPositionAccessor: (data)->
     return @errorHandler new Error "accessor x required" unless @_x
     return @errorHandler new Error "accessor y required" unless @_y
-    
+
     if typeof @_x(data) is 'undefined'
       return @errorHandler new Veasy.AccessorError @_x, @_y, data
     if typeof @_y(data) is 'undefined'
@@ -114,25 +114,25 @@ class Veasy
       svg.selectAll(selector).style('opacity', opacity)
       d3.select(this)
         .style('opacity', 1.0)
-        
+
   clearInhibit: (selector)->
     svg = @svg
     (d)->
       svg.selectAll(selector).style('opacity', 1.0)
-    
+
   #
   # ### errorHandler
-  # 
+  #
   errorHandler: (err)->
     @svg.append('text')
       .attr('x', @width / 2)
       .attr('y', @height / 2)
       .text(@opt.failMessage or "oops! draw chart fail...")
     throw err
-  
+
   #
   # ### draw line chart
-  # 
+  #
   drawLine: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     if err = @isValidPositionAccessor mergedSeries[0]
@@ -170,7 +170,7 @@ class Veasy
       else
         color = (d, idx)->
           category10(sid)
-          
+
       l = @svg.append("path").attr('class', "line serie-#{sid}")
         .datum(if (sort = opt.sort) then serie.data.sort(sort) else serie.data)
         .attr("d", line)
@@ -212,7 +212,7 @@ class Veasy
         title: ()->
           d = this.__data__
           tooltipFormat(d)
-      
+
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
     xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
@@ -226,10 +226,10 @@ class Veasy
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
-    
+
   #
   # ### draw area chart
-  # 
+  #
   drawArea: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     if err = @isValidPositionAccessor mergedSeries[0]
@@ -268,7 +268,7 @@ class Veasy
       else
         color = (d, idx)->
           category10(sid)
-          
+
       l = @svg.append("path").attr('class', "area serie-#{sid}")
         .datum(if (sort = opt.sort) then serie.data.sort(sort) else serie.data)
         .attr("d", area)
@@ -309,7 +309,7 @@ class Veasy
         title: ()->
           d = this.__data__
           tooltipFormat(d)
-      
+
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
     xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
@@ -326,7 +326,7 @@ class Veasy
 
   #
   # ### draw stack chart
-  #     
+  #
   drawStack: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     if err = @isValidPositionAccessor mergedSeries[0]
@@ -395,16 +395,16 @@ class Veasy
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
-    
+
   #
   # ### draw bar chart
-  # 
+  #
   drawBar: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     if err = @isValidPositionAccessor mergedSeries[0]
       return err
     opt = new Option @opt, opt
-    
+
     allLabels = null
     do (mergedSeries)=>
       labels = {}
@@ -414,7 +414,7 @@ class Veasy
 
     xType = String
     yType = Number
-    
+
     @xScale = x = d3.scale.ordinal()
     @yScale = y = d3.scale[opt.yscale or "linear"]()
 
@@ -428,7 +428,7 @@ class Veasy
         .range([@height, 0])
 
     bandWidth = x.rangeBand() / series.length
-    
+
     category10 = d3.scale.category10()
     series.forEach (serie, sid)=>
       if @_color
@@ -439,7 +439,7 @@ class Veasy
       else
         color = (d, idx)->
           category10(sid)
-          
+
       rect = @svg.selectAll("rect.bar.serie-#{sid}").data(serie.data).enter()
         .append("rect").attr("class", "bar serie-#{sid}")
 
@@ -455,7 +455,7 @@ class Veasy
           .attr("width", bandWidth)
           .attr("y", (d)=> y(@_y(d)))
           .attr("height", (d)=> @height - y(@_y(d)))
-        
+
       rect
         .style("cursor", 'pointer')
         .attr("fill", color)
@@ -463,7 +463,7 @@ class Veasy
         .on('touchstart', @inhibitOther('rect.bar'))
         .on('mouseout', @clearInhibit('rect.bar'))
         .on('touchend', @clearInhibit('rect.bar'))
-        
+
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} rect").tipsy
         gravity: @opt.tooltip.gravity or if opt.transpose then 'w' else 's'
@@ -502,13 +502,13 @@ class Veasy
 
   #
   # ### draw pie chart
-  # 
+  #
   drawPie: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     if err = @isValidPositionAccessor mergedSeries[0]
       return err
     opt = new Option @opt, opt
-    
+
     radius = Math.min(@width / series.length, @height) / 2
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
@@ -543,7 +543,7 @@ class Veasy
         .on('touchstart', @inhibitOther('g.arc'))
         .on('mouseout', @clearInhibit('g.arc'))
         .on('touchend', @clearInhibit('g.arc'))
-        
+
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} path").tipsy
         gravity: @opt.tooltip.gravity or "s"
@@ -554,7 +554,7 @@ class Veasy
 
   #
   # ### draw flow chart
-  # 
+  #
   drawFlow: (data, opt = {})->
     opt = new Option @opt, opt
     unless d3.sankey?
@@ -566,12 +566,12 @@ class Veasy
       node.id = node.id or idx
 
     color = d3.scale.category10()
-          
+
     sankey = d3.sankey()
       .nodeWidth(opt.nodeWidth or 20)
       .nodePadding(opt.nodePadding or 0)
       .size([@width, @height])
-      
+
     path = sankey.link()
     sankey.nodes(data.nodes)
       .links(data.links)
@@ -589,7 +589,7 @@ class Veasy
       .style("cursor", 'pointer')
       .on('mouseover', (d)-> d3.select(this).style('opacity', 0.9))
       .on('mouseout', (d)-> d3.select(this).style('opacity', 0.6))
-      
+
 
     # link style and attr
 
@@ -607,7 +607,7 @@ class Veasy
       .on('touchstart', @inhibitOther('g.node rect'))
       .on('mouseout', @clearInhibit('g.node rect'))
       .on('touchend', @clearInhibit('g.node rect'))
-    # node.append('text')    
+    # node.append('text')
     # text
 
     if tooltipFormat = @opt.tooltip?.format
@@ -617,24 +617,24 @@ class Veasy
         title: ()->
           d = this.__data__
           tooltipFormat(d)
-          
+
       $("svg##{@id} path.link").tipsy
         gravity: @opt.tooltip.gravity or "s"
         html: true
         title: ()->
           d = this.__data__
           tooltipFormat(d)
-          
+
   #
   # ### draw scatterPlot
-  # 
+  #
   drawScatterPlot: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     if error = @isValidPositionAccessor(mergedSeries[0])
       return @errorHandler error
 
     opt = new Option @opt, opt
-        
+
     allXrange = d3.extent mergedSeries, @_x
     allYrange = d3.extent mergedSeries, @_y
 
@@ -654,7 +654,7 @@ class Veasy
     category10 = d3.scale.category10()
     series.forEach (serie, sid)=>
       sym = d3.svg.symbol().type('circle')
-      
+
       if @_color?
         color = (d, idx)=>
           @_color(d, idx, sid)
@@ -664,14 +664,14 @@ class Veasy
       if @_symbol?
         symbol = (d, idx)=>
           @_symbol(d, idx, sid)
-      
+
       point = @svg.selectAll("path.plot.serie-#{sid}").data(serie.data).enter()
         .append('path').attr('class', "plot serie-#{sid}")
         .attr('d', (d, idx)=>
           sym.size(@_size?(d) or 48).type(symbol?(d, idx) or 'circle')(d))
         .attr('transform', (d)=> "translate(#{x(@_x(d))},#{y(@_y(d))})")
         .attr('fill', color)
-    
+
       if tooltipFormat = @opt.tooltip?.format
         $("svg##{@id} path.plot.serie-#{sid}").tipsy
           gravity: @opt.tooltip.gravity or "s"
@@ -679,7 +679,7 @@ class Veasy
           title: ()->
             d = this.__data__
             tooltipFormat(d)
-          
+
     xaxis = d3.svg.axis().scale(x)
     yaxis = d3.svg.axis().scale(y).orient("left")
     xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
@@ -693,20 +693,108 @@ class Veasy
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
-    
+
   #
   # ### draw scatterMatrix
-  # 
-  drawScatterMatrix: (data, opt = {})->
-    
+  #
+  drawScatterMatrix: (serie, opt = {})->
+    opt = new Option @opt, opt
+
+    attrs = (k for k of serie.data[0])
+    padding = 5
+    margin  = 10
+    r = 4
+
+    width = 0|((@width - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
+    height = 0|((@height - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
+
+    for k1, idx1 in attrs
+
+      for k2, idx2 in attrs
+        matrix = @svg.append('g').attr('class', 'scattermatrix')
+          .attr('width', width).attr('height', height)
+          .attr('transform', (d)->
+            "translate(#{(width + padding + margin * 2) * idx2}, #{(height + padding + margin * 2) * idx1})")
+
+        type1 = serie.data[0][k1].constructor.name
+        type2 = serie.data[0][k2].constructor.name
+
+        scales1 = (if type1 is 'Date' then d3.time.scale() else d3.scale.linear())
+          .range([width, 0])
+          .domain(d3.extent(serie.data, (d)-> d[k1]))
+        scales2 = (if type2 is 'Date' then d3.time.scale() else d3.scale.linear())
+          .range([0, height])
+          .domain(d3.extent(serie.data, (d)-> d[k2]))
+
+        if idx2 is 0
+          text = matrix.append('text').text(attrs[idx1])
+          text.attr('transform', "rotate(-90) translate(-#{height}, -40)")
+          yaxis = d3.svg.axis().scale(scales1).orient('left')
+            .ticks(5)
+          if type1 is 'Date'
+            yaxis.tickFormat(d3.time.format("%y/%m/%d"))
+          yAxis = matrix.append('g')
+            .attr('class', 'yaxis')
+            .call(yaxis)
+          yAxis.selectAll('path').attr('fill', 'none')
+
+        if idx1 is 0
+          matrix.append('text').text(attrs[idx2])
+            .attr('transform', "translate(0, -40)")
+          xaxis = d3.svg.axis().scale(scales2).orient('top')
+            .ticks(5)
+          if type2 is 'Date'
+            xaxis.tickFormat(d3.time.format("%y/%m/%d"))
+          xAxis = matrix.append('g')
+            .attr('class', 'xaxis')
+            .call(xaxis)
+          xAxis.selectAll('path').attr('fill', 'none')
+          xAxis.selectAll('text').attr('transform', 'rotate(-90) translate(20, 10)')
+
+        matrix.append('rect')
+          .attr('width', width + r * 2)
+          .attr('height', height + r * 2)
+          .attr('transform', "translate(#{-r}, #{-r})")
+          .attr('stroke', 'black')
+          .attr('fill', 'none')
+
+        if idx1 is idx2
+          color = d3.scale.category10()(0)
+          extent = d3.extent(serie.data, (d)-> d[k1])
+          scaleRange = d3.scale.linear().domain(extent)
+            .range([0, 9])
+          data = d3.nest().key((d)-> 0|scaleRange(d[k1]) ).sortKeys((a, b)-> a - b)
+            .rollup((vals)-> vals.length).entries(serie.data)
+          scale = d3.scale.linear().domain([0, d3.extent(data, (d)-> d.values)[1]])
+            .range([height, 0])
+
+          matrix.append('g').selectAll('rect').data(data).enter()
+            .append('rect')
+            .attr('width', (width + r * 2) / data.length)
+            .attr('height', (d)-> height - scale(d.values))
+            .attr('x', (d, idx)-> idx * (width + r * 2) / data.length - r)
+            .attr('y', (d)-> scale(d.values) + r)
+            .attr('fill', color)
+          continue
+
+        matrix.append('g').selectAll('circle.scatter')
+          .data(serie.data).enter()
+          .append('circle').attr('class', 'scatter')
+          .attr('cy', (d)-> scales1(d[k1]))
+          .attr('cx', (d)-> scales2(d[k2]))
+          .attr('r', 4)
+          .attr('fill', 'none').attr('stroke', 'black')
+
+
+
   #
   # ### draw bubble
-  # 
+  #
   drawBubble: (data, opt = {})->
-    
+
   #
   # ### draw colored table
-  # 
+  #
   drawColoredTable: (data, opt = {})->
     table = d3.select(@$target.get(0)).append('table')
 
@@ -718,7 +806,7 @@ class Veasy
       .text((d)=>
         @_y(d)
       )
-          
+
 Veasy.Option = class Option
   # overwrite value after options
   constructor: (opts...)->

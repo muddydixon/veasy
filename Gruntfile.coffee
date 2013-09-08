@@ -14,9 +14,9 @@ module.exports = (grunt)->
             "test/*_test.coffee"
             "test/footer.coffee"
             ]
-          
+
     watch:
-      src: 
+      src:
         files: ["src/veasy.coffee"]
         tasks: ["coffee"]
       test:
@@ -27,5 +27,3 @@ module.exports = (grunt)->
   grunt.loadNpmTasks "grunt-contrib-watch"
 
   grunt.registerTask "default", ["coffee"]
-        
-    
