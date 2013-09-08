@@ -762,7 +762,7 @@ describe('scatter matrix', function() {
       name: "series " + id,
       data: (function() {
         _results = [];
-        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+        for (_i = 0; _i <= 30; _i++){ _results.push(_i); }
         return _results;
       }).apply(this).map(function(i) {
         return {
@@ -770,7 +770,7 @@ describe('scatter matrix', function() {
           value: Math.random() * 0.1 + Math.sin(i),
           sales: Math.random() * 0.1 + Math.cos(i),
           cost: 0 | Math.random() * 100,
-          country: 0 | Math.random() * 7
+          country: 0 | Math.random() * 7 * (id + 1)
         };
       })
     };
@@ -811,7 +811,7 @@ describe('scatter matrix', function() {
     }).y(function(d) {
       return d.value;
     });
-    return sales.drawScatterMatrix(seriesData[0]);
+    return sales.drawScatterMatrix(seriesData);
   });
 });
 

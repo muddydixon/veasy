@@ -697,41 +697,131 @@ class Veasy
   #
   # ### draw scatterMatrix
   #
-  drawScatterMatrix: (serie, opt = {})->
+  # drawScatterMatrix: (serie, opt = {})->
+  #   opt = new Option @opt, opt
+
+  #   attrs = (k for k of serie.data[0])
+  #   padding = 5
+  #   margin  = 10
+  #   r = 4
+
+  #   width = 0|((@width - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
+  #   height = 0|((@height - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
+
+  #   for k1, idx1 in attrs
+
+  #     for k2, idx2 in attrs
+  #       matrix = @svg.append('g').attr('class', 'scattermatrix')
+  #         .attr('width', width).attr('height', height)
+  #         .attr('transform', (d)->
+  #           "translate(#{(width + padding + margin * 2) * idx2}, #{(height + padding + margin * 2) * idx1})")
+
+  #       type1 = serie.data[0][k1].constructor.name
+  #       type2 = serie.data[0][k2].constructor.name
+
+  #       scales1 = (if type1 is 'Date' then d3.time.scale() else d3.scale.linear())
+  #         .range([width, 0])
+  #         .domain(d3.extent(serie.data, (d)-> d[k1]))
+  #       scales2 = (if type2 is 'Date' then d3.time.scale() else d3.scale.linear())
+  #         .range([0, height])
+  #         .domain(d3.extent(serie.data, (d)-> d[k2]))
+
+  #       if idx2 is 0
+  #         text = matrix.append('text').text(attrs[idx1])
+  #         text.attr('transform', "rotate(-90) translate(-#{height}, -40)")
+  #         yaxis = d3.svg.axis().scale(scales1).orient('left')
+  #           .ticks(5)
+  #         if type1 is 'Date'
+  #           yaxis.tickFormat(d3.time.format("%y/%m/%d"))
+  #         yAxis = matrix.append('g')
+  #           .attr('class', 'yaxis')
+  #           .call(yaxis)
+  #         yAxis.selectAll('path').attr('fill', 'none')
+
+  #       if idx1 is 0
+  #         matrix.append('text').text(attrs[idx2])
+  #           .attr('transform', "translate(0, -40)")
+  #         xaxis = d3.svg.axis().scale(scales2).orient('top')
+  #           .ticks(5)
+  #         if type2 is 'Date'
+  #           xaxis.tickFormat(d3.time.format("%y/%m/%d"))
+  #         xAxis = matrix.append('g')
+  #           .attr('class', 'xaxis')
+  #           .call(xaxis)
+  #         xAxis.selectAll('path').attr('fill', 'none')
+  #         xAxis.selectAll('text').attr('transform', 'rotate(-90) translate(20, 10)')
+
+  #       matrix.append('rect')
+  #         .attr('width', width + r * 2)
+  #         .attr('height', height + r * 2)
+  #         .attr('transform', "translate(#{-r}, #{-r})")
+  #         .attr('stroke', 'black')
+  #         .attr('fill', 'none')
+
+  #       if idx1 is idx2
+  #         color = d3.scale.category10()(0)
+  #         extent = d3.extent(serie.data, (d)-> d[k1])
+  #         scaleRange = d3.scale.linear().domain(extent)
+  #           .range([0, 9])
+  #         data = d3.nest().key((d)-> 0|scaleRange(d[k1]) ).sortKeys((a, b)-> a - b)
+  #           .rollup((vals)-> vals.length).entries(serie.data)
+  #         scale = d3.scale.linear().domain([0, d3.extent(data, (d)-> d.values)[1]])
+  #           .range([height, 0])
+
+  #         matrix.append('g').selectAll('rect').data(data).enter()
+  #           .append('rect')
+  #           .attr('width', (width + r * 2) / data.length)
+  #           .attr('height', (d)-> height - scale(d.values))
+  #           .attr('x', (d, idx)-> idx * (width + r * 2) / data.length - r)
+  #           .attr('y', (d)-> scale(d.values) + r)
+  #           .attr('fill', color)
+  #         continue
+
+  #       matrix.append('g').selectAll('circle.scatter')
+  #         .data(serie.data).enter()
+  #         .append('circle').attr('class', 'scatter')
+  #         .attr('cy', (d)-> scales1(d[k1]))
+  #         .attr('cx', (d)-> scales2(d[k2]))
+  #         .attr('r', 4)
+  #         .attr('fill', 'none').attr('stroke', 'black')
+
+  drawScatterMatrix: (series, opt = {})->
+    mergedSeries = @getMergedSeries series
     opt = new Option @opt, opt
 
-    attrs = (k for k of serie.data[0])
+    attrs = (k for k of series[0].data[0])
     padding = 5
     margin  = 10
-    r = 4
+    r = 2
 
     width = 0|((@width - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
     height = 0|((@height - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
 
-    for k1, idx1 in attrs
+    extents = {}
+    scales  = {}
+    types  =  {}
+    for attr, idx1 in attrs
+      extent = extents[attr] = d3.extent(mergedSeries, (d)-> d[attr])
+      type = types[attr] = mergedSeries[0][attr].constructor.name
+      scales[attr] = (if type is 'Date' then d3.time.scale() else d3.scale.linear())
+        .domain(extent)
 
-      for k2, idx2 in attrs
+    for attr1, idx1 in attrs
+      for attr2, idx2 in attrs
         matrix = @svg.append('g').attr('class', 'scattermatrix')
           .attr('width', width).attr('height', height)
           .attr('transform', (d)->
             "translate(#{(width + padding + margin * 2) * idx2}, #{(height + padding + margin * 2) * idx1})")
 
-        type1 = serie.data[0][k1].constructor.name
-        type2 = serie.data[0][k2].constructor.name
-
-        scales1 = (if type1 is 'Date' then d3.time.scale() else d3.scale.linear())
-          .range([width, 0])
-          .domain(d3.extent(serie.data, (d)-> d[k1]))
-        scales2 = (if type2 is 'Date' then d3.time.scale() else d3.scale.linear())
-          .range([0, height])
-          .domain(d3.extent(serie.data, (d)-> d[k2]))
+        scale1 = scales[attr1].range([width, 0])
+        scale2 = scales[attr2].range([0, height])
 
         if idx2 is 0
           text = matrix.append('text').text(attrs[idx1])
           text.attr('transform', "rotate(-90) translate(-#{height}, -40)")
-          yaxis = d3.svg.axis().scale(scales1).orient('left')
+          yaxis = d3.svg.axis().scale(scales[attr1]).orient('left')
             .ticks(5)
-          if type1 is 'Date'
+          if types[attr1] is 'Date'
             yaxis.tickFormat(d3.time.format("%y/%m/%d"))
           yAxis = matrix.append('g')
             .attr('class', 'yaxis')
@@ -741,9 +831,9 @@ class Veasy
         if idx1 is 0
           matrix.append('text').text(attrs[idx2])
             .attr('transform', "translate(0, -40)")
-          xaxis = d3.svg.axis().scale(scales2).orient('top')
+          xaxis = d3.svg.axis().scale(scales[attr2]).orient('top')
             .ticks(5)
-          if type2 is 'Date'
+          if types[attr2] is 'Date'
             xaxis.tickFormat(d3.time.format("%y/%m/%d"))
           xAxis = matrix.append('g')
             .attr('class', 'xaxis')
@@ -758,32 +848,37 @@ class Veasy
           .attr('stroke', 'black')
           .attr('fill', 'none')
 
+        colors = d3.scale.category10()
         if idx1 is idx2
-          color = d3.scale.category10()(0)
-          extent = d3.extent(serie.data, (d)-> d[k1])
-          scaleRange = d3.scale.linear().domain(extent)
-            .range([0, 9])
-          data = d3.nest().key((d)-> 0|scaleRange(d[k1]) ).sortKeys((a, b)-> a - b)
-            .rollup((vals)-> vals.length).entries(serie.data)
-          scale = d3.scale.linear().domain([0, d3.extent(data, (d)-> d.values)[1]])
-            .range([height, 0])
+          scaleRange = scales[attr1].range([0, 9])
+          mergedData = d3.nest().key((d)-> 0|scaleRange(d[attr1]) ).sortKeys()
+            .rollup((vals)-> vals.length).entries(mergedSeries)
+          w = (width + r * 2) / mergedData.length
 
-          matrix.append('g').selectAll('rect').data(data).enter()
-            .append('rect')
-            .attr('width', (width + r * 2) / data.length)
-            .attr('height', (d)-> height - scale(d.values))
-            .attr('x', (d, idx)-> idx * (width + r * 2) / data.length - r)
-            .attr('y', (d)-> scale(d.values) + r)
-            .attr('fill', color)
+          series.forEach (serie, sid)->
+            data = d3.nest().key((d)-> 0|scaleRange(d[attr1]) ).sortKeys((a, b)-> a - b)
+              .rollup((vals)-> vals.length).entries(serie.data)
+            scale = d3.scale.linear().domain([0, d3.extent(data, (d)-> d.values)[1]])
+              .range([(height / series.length), 0])
+
+            matrix.append('g').selectAll('rect').data(data).enter()
+              .append('rect')
+              .attr('width', w)
+              .attr('height', (d)-> height / series.length - scale(d.values))
+              .attr('x', (d, idx)-> w * idx - r)
+              .attr('y', (d)-> height / series.length * sid + scale(d.values) + r)
+              .attr('fill', colors(sid))
+
           continue
 
-        matrix.append('g').selectAll('circle.scatter')
-          .data(serie.data).enter()
-          .append('circle').attr('class', 'scatter')
-          .attr('cy', (d)-> scales1(d[k1]))
-          .attr('cx', (d)-> scales2(d[k2]))
-          .attr('r', 4)
-          .attr('fill', 'none').attr('stroke', 'black')
+        series.forEach (serie, idx)->
+          matrix.append('g').selectAll("circle.scatter.serie-#{idx}")
+            .data(serie.data).enter()
+            .append('circle').attr('class', "scatter serie-#{idx}")
+            .attr('cy', (d)-> scales[attr1](d[attr1]))
+            .attr('cx', (d)-> scales[attr2](d[attr2]))
+            .attr('r', r)
+            .attr('fill', colors(idx)).attr('stroke', 'none')
 
 
 
