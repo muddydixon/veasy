@@ -50,6 +50,21 @@ describe 'bar chart', ->
     for d, idx in pointData
       expect(chart.find("rect.bar.serie-#{idx}")).have.length 10
 
+  it 'transpose serie with axis title', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      transpose: true, margin: [100, 50], ylim: [0, 1500]
+      width: 500, height: 600
+      axis:
+        x: title: "X軸です"
+        y: title: "Y軸です"
+    sales.x((d)-> d.label).y((d)-> d.value)
+    sales.drawBar pointData
+
+    expect(chart.find('rect.bar')).have.length 40
+    for d, idx in pointData
+      expect(chart.find("rect.bar.serie-#{idx}")).have.length 10
+
   it 'custom color', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart

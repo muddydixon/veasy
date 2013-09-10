@@ -312,7 +312,9 @@ class Veasy
           .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
         width = @$target.find('svg g.yaxis text.title').width()
         height = @$target.find('svg g.yaxis text.title').height()
-        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        tickLabel = @$target.find('svg g.yaxis g.tick text')
+        tickWidth = d3.max tickLabel, (d)-> $(d).width()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
         yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
@@ -403,7 +405,9 @@ class Veasy
           .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
         width = @$target.find('svg g.yaxis text.title').width()
         height = @$target.find('svg g.yaxis text.title').height()
-        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        tickLabel = @$target.find('svg g.yaxis g.tick text')
+        tickWidth = d3.max tickLabel, (d)-> $(d).width()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
         yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
@@ -490,7 +494,9 @@ class Veasy
           .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
         width = @$target.find('svg g.yaxis text.title').width()
         height = @$target.find('svg g.yaxis text.title').height()
-        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        tickLabel = @$target.find('svg g.yaxis g.tick text')
+        tickWidth = d3.max tickLabel, (d)-> $(d).width()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
         yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
@@ -589,15 +595,17 @@ class Veasy
             .text(@opt.axis?.x?.title).style('text-anchor', 'middle')
           width = @$target.find('svg g.xaxis text.title').width()
           height = @$target.find('svg g.xaxis text.title').height()
-          xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+          tickLabel = @$target.find('svg g.xaxis g.tick text')
+          tickWidth = d3.max tickLabel, (d)-> $(d).width()
+          xTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
+          xTitle.attr('transform', "rotate(-90)")
 
         if @opt.axis?.y?.title
           yTitle = yAxis.append('text').attr('class', 'title')
             .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
           width = @$target.find('svg g.yaxis text.title').width()
           height = @$target.find('svg g.yaxis text.title').height()
-          yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
-          yTitle.attr('transform', "rotate(-90)")
+          yTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
 
       else
         xaxis = getAxis x, new Option({}, @opt.axis?.x)
@@ -621,10 +629,11 @@ class Veasy
         if @opt.axis?.y?.title
           yTitle = yAxis.append('text').attr('class', 'title')
             .text(@opt.axis.y.title).style('text-anchor', 'middle')
-          console.log
           width = @$target.find('svg g.yaxis text.title').width()
           height = @$target.find('svg g.yaxis text.title').height()
-          yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+          tickLabel = @$target.find('svg g.yaxis g.tick text')
+          tickWidth = d3.max tickLabel, (d)-> $(d).width()
+          yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
           yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
@@ -839,7 +848,9 @@ class Veasy
           .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
         width = @$target.find('svg g.yaxis text.title').width()
         height = @$target.find('svg g.yaxis text.title').height()
-        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        tickLabel = @$target.find('svg g.yaxis g.tick text')
+        tickWidth = d3.max tickLabel, (d)-> $(d).width()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
         yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)

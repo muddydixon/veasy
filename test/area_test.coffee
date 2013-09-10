@@ -46,6 +46,7 @@ describe 'area chart', ->
   it 'axis title', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart,
+      margin: [100, 50]
       axis:
         x:
           title: "タイトル X 軸"

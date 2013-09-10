@@ -73,6 +73,7 @@ describe('area chart', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
+      margin: [100, 50],
       axis: {
         x: {
           title: "タイトル X 軸"
@@ -159,6 +160,38 @@ describe('bar chart', function() {
       ylim: [0, 1500],
       width: 500,
       height: 600
+    });
+    sales.x(function(d) {
+      return d.label;
+    }).y(function(d) {
+      return d.value;
+    });
+    sales.drawBar(pointData);
+    expect(chart.find('rect.bar')).have.length(40);
+    _results = [];
+    for (idx = _i = 0, _len = pointData.length; _i < _len; idx = ++_i) {
+      d = pointData[idx];
+      _results.push(expect(chart.find("rect.bar.serie-" + idx)).have.length(10));
+    }
+    return _results;
+  });
+  it('transpose serie with axis title', function() {
+    var chart, d, idx, sales, _i, _len, _results;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      transpose: true,
+      margin: [100, 50],
+      ylim: [0, 1500],
+      width: 500,
+      height: 600,
+      axis: {
+        x: {
+          title: "X軸です"
+        },
+        y: {
+          title: "Y軸です"
+        }
+      }
     });
     sales.x(function(d) {
       return d.label;
