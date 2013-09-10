@@ -1,7 +1,7 @@
 describe 'stack chart', ->
   baseid = 'stack'
   id = 0
-  
+
   seriesData = [0..3].map (id)->
     name: "series #{id}"
     data: [0..100].map (i)->
@@ -23,12 +23,16 @@ describe 'stack chart', ->
 
   it 'basically series', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart
+    sales = new Veasy chart,
+      axis:
+        x:
+          title: "x axis"
+        y:
+          title: "y axis"
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawStack seriesData
 
-    stacks = chart.find('path.stack') 
+    stacks = chart.find('path.stack')
     expect(stacks).have.length 4
     for stack, idx in stacks
       expect($(stack).attr('d')).not.contain "NaN"
-

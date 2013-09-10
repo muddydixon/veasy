@@ -125,3 +125,24 @@ describe 'scatter plot', ->
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
+
+  it 'axis title', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      tooltip:
+        format: (d, idx)->
+          "sales: #{d.sales}"
+      axis:
+        x:
+          title: "タイトル X 軸"
+        y:
+          title: "タイトル Y 軸"
+
+    sales.x((d)-> d.time).y((d)-> d.value)
+      .size((d)-> d.sales / 5)
+    sales.drawScatterPlot seriesData
+
+    # lines = chart.find('path.line')
+    # expect(lines).have.length 4
+    # for line, idx in lines
+    #   expect($(line).attr('d')).not.contain "NaN"

@@ -294,11 +294,26 @@ class Veasy
 
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         .attr("transform", "translate(0,#{@height})")
-        .selectAll("path")
+      xAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
-        .selectAll("path")
+      yAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
+
+      if @opt.axis?.x?.title
+        xTitle = xAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.x?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.xaxis text.title').width()
+        height = @$target.find('svg g.xaxis text.title').height()
+        xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+      if @opt.axis?.y?.title
+        yTitle = yAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.yaxis text.title').width()
+        height = @$target.find('svg g.yaxis text.title').height()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
 
@@ -370,11 +385,26 @@ class Veasy
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         .attr("transform", "translate(0,#{@height})")
-        .selectAll("path")
+      xAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
-        .selectAll("path")
+      yAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
+
+      if @opt.axis?.x?.title
+        xTitle = xAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.x?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.xaxis text.title').width()
+        height = @$target.find('svg g.xaxis text.title').height()
+        xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+      if @opt.axis?.y?.title
+        yTitle = yAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.yaxis text.title').width()
+        height = @$target.find('svg g.yaxis text.title').height()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
 
@@ -442,11 +472,26 @@ class Veasy
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         .attr("transform", "translate(0,#{@height})")
-        .selectAll("path")
+      xAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
-        .selectAll("path")
+      yAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
+
+      if @opt.axis?.x?.title
+        xTitle = xAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.x?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.xaxis text.title').width()
+        height = @$target.find('svg g.xaxis text.title').height()
+        xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+      if @opt.axis?.y?.title
+        yTitle = yAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.yaxis text.title').width()
+        height = @$target.find('svg g.yaxis text.title').height()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
 
@@ -532,23 +577,55 @@ class Veasy
         yaxis = getAxis y, new Option({}, @opt.axis?.y)
 
         xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
-          .selectAll("path")
+        xAxis.selectAll("path")
           .attr("fill", "none").attr("stroke", "black")
         yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
           .attr("transform", "translate(0,#{@height})")
-          .selectAll("path")
+        yAxis.selectAll("path")
           .attr("fill", "none").attr("stroke", "black")
+
+        if @opt.axis?.x?.title
+          xTitle = xAxis.append('text').attr('class', 'title')
+            .text(@opt.axis?.x?.title).style('text-anchor', 'middle')
+          width = @$target.find('svg g.xaxis text.title').width()
+          height = @$target.find('svg g.xaxis text.title').height()
+          xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+        if @opt.axis?.y?.title
+          yTitle = yAxis.append('text').attr('class', 'title')
+            .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
+          width = @$target.find('svg g.yaxis text.title').width()
+          height = @$target.find('svg g.yaxis text.title').height()
+          yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+          yTitle.attr('transform', "rotate(-90)")
+
       else
         xaxis = getAxis x, new Option({}, @opt.axis?.x)
         yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
 
         xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
-        xAxis.attr("transform", "translate(0,#{@height})")
-          .selectAll("path")
+          .attr("transform", "translate(0,#{@height})")
+        xAxis.selectAll("path")
           .attr("fill", "none").attr("stroke", "black")
         yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
-          .selectAll("path")
+        yAxis.selectAll("path")
           .attr("fill", "none").attr("stroke", "black")
+
+        if @opt.axis?.x?.title
+          xTitle = xAxis.append('text').attr('class', 'title')
+            .text(@opt.axis.x.title).style('text-anchor', 'middle')
+          width = @$target.find('svg g.xaxis text.title').width()
+          height = @$target.find('svg g.xaxis text.title').height()
+          xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+        if @opt.axis?.y?.title
+          yTitle = yAxis.append('text').attr('class', 'title')
+            .text(@opt.axis.y.title).style('text-anchor', 'middle')
+          console.log
+          width = @$target.find('svg g.yaxis text.title').width()
+          height = @$target.find('svg g.yaxis text.title').height()
+          yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+          yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
 
@@ -744,11 +821,26 @@ class Veasy
 
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         .attr("transform", "translate(0,#{@height})")
-        .selectAll("path")
+      xAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
-        .selectAll("path")
+      yAxis.selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
+
+      if @opt.axis?.x?.title
+        xTitle = xAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.x?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.xaxis text.title').width()
+        height = @$target.find('svg g.xaxis text.title').height()
+        xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+      if @opt.axis?.y?.title
+        yTitle = yAxis.append('text').attr('class', 'title')
+          .text(@opt.axis?.y?.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.yaxis text.title').width()
+        height = @$target.find('svg g.yaxis text.title').height()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height * 2)
+        yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
 
