@@ -8,6 +8,7 @@ class Veasy
   constructor: (@$target, @opt = {})->
     @id = "#{Date.now()}-#{$('svg').length}"
     @$target = $(@$target) unless $target instanceof jQuery
+    @$target.attr('height', @opt.height)
 
     @margin = @opt.margin or [50, 50]
     @width  = (@opt.width or @$target.width() or 400) - @margin[0] * 2
@@ -21,6 +22,8 @@ class Veasy
     @_color     = null
     @_dir       = null
     @_texture   = null
+
+    @_legend    = null
 
     @xDefault = @opt.xDefault
     @yDefault = @opt.yDefault
@@ -83,6 +86,77 @@ class Veasy
     this
 
   #
+  # ### legend
+  #
+  legend: (position)->
+    @_legend =
+      position: position
+
+  appendLegend: (series, color)->
+    return unless series? and series.length > 0
+    return unless @_legend?
+
+    category10 = d3.scale.category10()
+    unless color?
+      if @_color
+        color = (serie, sid)=>
+          try
+            @_color(null, null, sid)
+          catch err
+            'grey'
+      else
+        color = (serie, sid)->
+          serie.opt?.color or category10(sid)
+
+    legend = @svg.append('g').attr('class', 'legend')
+    rect = legend.append('rect').attr('fill', 'white').attr('stroke', 'grey').style('opacity', 0.9)
+    list = legend.selectAll('text').data(series).enter()
+      .append('text').text((d, sid)=>
+        if @_symbol?
+          "#{@_symbol(null, null, sid)} #{d.name}"
+        else
+          d.name
+      ).attr('stroke', color)
+
+    $list = @$target.find('svg g g.legend text')
+    twidth = d3.max $list, (d)-> $(d).width()
+    theight = d3.max $list, (d)-> $(d).height()
+    padding = theight * 0.2
+
+    if @_legend.position?.match 'v'
+      list
+        .attr('dy', (d, idx)-> theight + idx * (theight + padding))
+        .attr('dx', padding * 2)
+      width = twidth + padding * 4
+      height = (theight + padding) * $list.length + padding * 2
+    else
+      list
+        .attr('dy', theight)
+        .attr('dx', (d, idx)-> idx * (twidth + padding) + padding * 2)
+      width = (twidth + padding) * $list.length + padding * 4
+      height = theight + padding * 2
+
+    rect.attr('width', width).attr('height', height)
+
+    left = (@width - width) / 2
+    top  = (@height - height) / 2
+
+    if @_legend.position?.match 'n'
+      top = 20
+    if @_legend.position?.match 'w'
+      left = 20
+    if @_legend.position?.match 's'
+      top = @height - height - 20
+    if @_legend.position?.match 'e'
+      left = @width - width - 20
+
+    legend.attr('transform', "translate(#{left}, #{top})")
+    legend.on 'mouseover', (d)->
+      d3.select(this).style('opacity', 0.3)
+    legend.on 'mouseout', (d)->
+      d3.select(this).style('opacity', 0.9)
+
+  #
   # ### getMergedSeries
   #
   # get merged all series data to range
@@ -130,6 +204,7 @@ class Veasy
       .text(@opt.failMessage or "oops! draw chart fail...")
     throw err
 
+  #############################################################
   #
   # ### draw line chart
   #
@@ -225,6 +300,8 @@ class Veasy
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
 
+    @appendLegend(series)
+
   #
   # ### draw area chart
   #
@@ -299,6 +376,8 @@ class Veasy
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
 
+    @appendLegend(series)
+
   #
   # ### draw stack chart
   #
@@ -368,6 +447,8 @@ class Veasy
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
+
+    @appendLegend(series)
 
   #
   # ### draw bar chart
@@ -469,6 +550,8 @@ class Veasy
           .selectAll("path")
           .attr("fill", "none").attr("stroke", "black")
 
+    @appendLegend(series)
+
   #
   # ### draw pie chart
   #
@@ -524,6 +607,8 @@ class Veasy
         title: ()->
           d = this.__data__.data
           tooltipFormat(d)
+
+    @appendLegend(series, ()-> 'grey')
 
   #
   # ### draw flow chart
@@ -664,6 +749,8 @@ class Veasy
       yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
         .selectAll("path")
         .attr("fill", "none").attr("stroke", "black")
+
+    @appendLegend(series)
 
   #
   # ### draw scatterMatrix
