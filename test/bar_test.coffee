@@ -65,7 +65,12 @@ describe 'bar chart', ->
 
   it 'custom color of each serie', ->
     chart = $("##{baseid}_#{this.__id__}")
-    sales = new Veasy chart
+    sales = new Veasy chart,
+      axis:
+        x:
+          title: "僕のX軸"
+        y:
+          title: "あなたのy軸"
     sales.x((d)-> d.label).y((d)-> d.value).legend('vsw')
     for serie, idx in pointData
       serie.opt =

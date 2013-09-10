@@ -58,10 +58,30 @@ describe('area chart', function() {
     });
     return sales.drawArea(seriesData);
   });
-  return it('legend', function() {
+  it('legend', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart);
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).legend('ne');
+    return sales.drawArea(seriesData);
+  });
+  return it('axis title', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      axis: {
+        x: {
+          title: "タイトル X 軸"
+        },
+        y: {
+          title: "タイトル Y 軸"
+        }
+      }
+    });
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {
@@ -188,7 +208,16 @@ describe('bar chart', function() {
   return it('custom color of each serie', function() {
     var bar, bars, chart, dat, idx, sales, serie, _i, _j, _len, _len1, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
+    sales = new Veasy(chart, {
+      axis: {
+        x: {
+          title: "僕のX軸"
+        },
+        y: {
+          title: "あなたのy軸"
+        }
+      }
+    });
     sales.x(function(d) {
       return d.label;
     }).y(function(d) {
@@ -974,7 +1003,7 @@ describe('scatter plot', function() {
     }).legend('es');
     return sales.drawScatterPlot(seriesData);
   });
-  return it('basically series symbol accessor', function() {
+  it('basically series symbol accessor', function() {
     var chart, color, sales, symbol;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
@@ -994,6 +1023,33 @@ describe('scatter plot', function() {
       return d.sales / 5;
     }).color(function(d, idx, sid) {
       return color(d.sales);
+    });
+    return sales.drawScatterPlot(seriesData);
+  });
+  return it('axis title', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      tooltip: {
+        format: function(d, idx) {
+          return "sales: " + d.sales;
+        }
+      },
+      axis: {
+        x: {
+          title: "タイトル X 軸"
+        },
+        y: {
+          title: "タイトル Y 軸"
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    }).size(function(d) {
+      return d.sales / 5;
     });
     return sales.drawScatterPlot(seriesData);
   });
@@ -1045,7 +1101,16 @@ describe('stack chart', function() {
   return it('basically series', function() {
     var chart, idx, sales, stack, stacks, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
+    sales = new Veasy(chart, {
+      axis: {
+        x: {
+          title: "x axis"
+        },
+        y: {
+          title: "y axis"
+        }
+      }
+    });
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {

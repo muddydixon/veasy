@@ -43,6 +43,22 @@ describe 'area chart', ->
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
 
+  it 'axis title', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      axis:
+        x:
+          title: "タイトル X 軸"
+        y:
+          title: "タイトル Y 軸"
+    sales.x((d)-> d.time).y((d)-> d.value).legend('ne')
+    sales.drawArea seriesData
+
+    # area = chart.find('path.line')
+    # expect(lines).have.length 4
+    # for line, idx in lines
+    #   expect($(line).attr('d')).not.contain "NaN"
+
   # it 'basically point data', ->
   #   chart = $("##{baseid}_#{this.__id__}")
   #   sales = new Veasy chart,
