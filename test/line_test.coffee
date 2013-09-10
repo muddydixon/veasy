@@ -24,7 +24,7 @@ describe 'line chart', ->
   it 'basically series', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
-    sales.x((d)-> d.time).y((d)-> d.value)
+    sales.x((d)-> d.time).y((d)-> d.value).legend('se')
     sales.drawLine seriesData
 
     lines = chart.find('path.line')

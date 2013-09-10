@@ -1,7 +1,7 @@
 describe 'scatter plot', ->
   baseid = 'scatter'
   id = 0
-  
+
   seriesData = [0..3].map (id)->
     name: "series #{id}"
     data: [0..100].map (i)->
@@ -16,7 +16,7 @@ describe 'scatter plot', ->
       x: 0|Math.random() * 1000
       y: 0|Math.random() * 1000
   monochrom = ["#000", "#333", "#666", "#999", "#CCC"]
-    
+
   beforeEach ->
     this.__id__ = id++
     $('<div>', {id: "#{baseid}_#{this.__id__}"})
@@ -28,10 +28,10 @@ describe 'scatter plot', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
     color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"])
-    sales.x((d)-> d.time).y((d)-> d.value)
+    sales.x((d)-> d.time).y((d)-> d.value).legend('s')
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
@@ -44,7 +44,7 @@ describe 'scatter plot', ->
       .color((d, idx)-> color(d.sales))
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
@@ -58,7 +58,7 @@ describe 'scatter plot', ->
       .size((d)-> d.cost)
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
@@ -66,12 +66,11 @@ describe 'scatter plot', ->
   it 'basically series size accessor', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
-    color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"])
     sales.x((d)-> d.time).y((d)-> d.value)
       .size((d)-> 0|d.cost)
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
@@ -86,11 +85,11 @@ describe 'scatter plot', ->
       .symbol((d, idx, sid)-> symbol[sid % 7])
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
-    # 
+    #
   it 'basically series symbol accessor', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
@@ -100,9 +99,10 @@ describe 'scatter plot', ->
       .size((d)-> 0|d.cost)
       .color((d, idx, sid)-> color(d.sales))
       .symbol((d, idx, sid)-> symbol[sid % 7])
+      .legend('es')
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
@@ -113,7 +113,7 @@ describe 'scatter plot', ->
       tooltip:
         format: (d, idx)->
           "sales: #{d.sales}"
-      
+
     color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"])
     symbol = d3.svg.symbolTypes
     sales.x((d)-> d.time).y((d)-> d.value)
@@ -121,7 +121,7 @@ describe 'scatter plot', ->
       .color((d, idx, sid)-> color(d.sales))
     sales.drawScatterPlot seriesData
 
-    # lines = chart.find('path.line') 
+    # lines = chart.find('path.line')
     # expect(lines).have.length 4
     # for line, idx in lines
     #   expect($(line).attr('d')).not.contain "NaN"
