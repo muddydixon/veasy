@@ -1,6 +1,6 @@
 {
   "name": "veasy",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Veasy: easy visualizaion using d3.js",
   "main": "lib/veasy.js",
   "directories": {

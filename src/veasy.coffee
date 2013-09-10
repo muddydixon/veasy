@@ -509,12 +509,16 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-    radius = Math.min(@width / series.length, @height) / 2
+    @svg.attr('transform', '')
+      .attr('width', @width + @margin[0] * 2)
+      .attr('height', @height + @margin[1] * 2)
+
+    radius = Math.min((@width + @margin[0] * 2) / series.length, (@height + @margin[1] * 2)) / 2
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
 
     @xScale = x = d3.scale.ordinal()
-      .rangeBands([0, @width], 0.1)
+      .rangeBands([0, @width + @margin[0] * 2], 0.1)
       .domain((serie.name for serie in series))
 
     category10 = d3.scale.category10()
