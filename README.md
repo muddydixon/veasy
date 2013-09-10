@@ -19,3 +19,20 @@ mychart.drawBar()
 mychart.drawPie()
 
 ```
+
+## Todo
+
+* separate axis object
+* more tick attribute
+* point size
+* axis label
+* chart title
+
+## Author
+
+* muddydixon<muddydixon@gmail.com>
+* twitter: @muddydixon
+
+## License
+
+Apache License Version 2.0

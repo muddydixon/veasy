@@ -187,7 +187,7 @@ class Veasy
         .append('circle').attr('class', "serie-#{sid}")
         .attr('cx', (d)=> x(@_x(d)))
         .attr('cy', (d)=> y(@_y(d)))
-        .attr('r', (@opt.withPoint? and 5) or 1)
+        .attr('r', @opt.withPoint?.size or 2)
         .attr('fill', color)
         .attr('stroke', 'none')
         .attr('stroke-width', 3)
@@ -195,12 +195,12 @@ class Veasy
       if @opt.withPoint
         dot.on('mouseover', (d)=>
           dom = d3.select(d3.event.target)
-          dom.attr('r', 7)
+          dom.attr('r', @opt.withPoint?.size + 3 or 4)
             .attr('stroke', dom.attr('fill'))
             .attr('fill', 'white')
         ).on('mouseout', (d)=>
           dom = d3.select(d3.event.target)
-          dom.attr('r', 5)
+          dom.attr('r', @opt.withPoint?.size or 2)
             .attr('fill', dom.attr('stroke'))
             .attr('stroke', 'none')
         )
@@ -213,12 +213,10 @@ class Veasy
           d = this.__data__
           tooltipFormat(d)
 
-    xaxis = d3.svg.axis().scale(x)
-    yaxis = d3.svg.axis().scale(y).orient("left")
-    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
-    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
-
     if not @svg.select('g.xaxis')[0][0]
+      xaxis = getAxis x, new Option({}, @opt.axis?.x)
+      yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
+
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         .attr("transform", "translate(0,#{@height})")
         .selectAll("path")
@@ -280,27 +278,6 @@ class Veasy
         .on('mouseout', @clearInhibit('path.area'))
         .on('touchend', @clearInhibit('path.area'))
 
-      dot = @svg.selectAll("circle.serie-#{sid}").data(serie.data).enter()
-        .append('circle').attr('class', "serie-#{sid}")
-        .attr('cx', (d)=> x(@_x(d)))
-        .attr('cy', (d)=> y(@_y(d)))
-        .attr('r', (@opt.withPoint? and 5) or 1)
-        .attr('fill', color)
-        .attr('stroke', 'none')
-        .attr('stroke-width', 3)
-        .style('cursor', 'pointer')
-      if @opt.withPoint
-        dot.on('mouseover', (d)=>
-          dom = d3.select(d3.event.target)
-          dom.attr('r', 7)
-            .attr('stroke', dom.attr('fill'))
-            .attr('fill', 'white')
-        ).on('mouseout', (d)=>
-          dom = d3.select(d3.event.target)
-          dom.attr('r', 5)
-            .attr('fill', dom.attr('stroke'))
-            .attr('stroke', 'none')
-        )
 
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} circle").tipsy
@@ -310,10 +287,8 @@ class Veasy
           d = this.__data__
           tooltipFormat(d)
 
-    xaxis = d3.svg.axis().scale(x)
-    yaxis = d3.svg.axis().scale(y).orient("left")
-    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
-    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
+    xaxis = getAxis x, new Option({}, @opt.axis?.x)
+    yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
 
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
@@ -382,10 +357,8 @@ class Veasy
       .on('mouseout', @clearInhibit('path.stack'))
       .on('touchend', @clearInhibit('path.stack'))
 
-    xaxis = d3.svg.axis().scale(x)
-    yaxis = d3.svg.axis().scale(y).orient("left")
-    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
-    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
+    xaxis = getAxis x, new Option({}, @opt.axis?.x)
+    yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
 
     if not @svg.select('g.xaxis')[0][0]
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
@@ -474,10 +447,8 @@ class Veasy
 
     if not @svg.select('g.xaxis')[0][0]
       if opt.transpose
-        xaxis = d3.svg.axis().scale(x).orient("left")
-        yaxis = d3.svg.axis().scale(y)
-        xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
-        yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
+        xaxis = getAxis x, new Option({orient: 'left'}, @opt.axis?.x)
+        yaxis = getAxis y, new Option({}, @opt.axis?.y)
 
         xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
           .selectAll("path")
@@ -487,10 +458,8 @@ class Veasy
           .selectAll("path")
           .attr("fill", "none").attr("stroke", "black")
       else
-        xaxis = d3.svg.axis().scale(x)
-        yaxis = d3.svg.axis().scale(y).orient("left")
-        xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
-        yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
+        xaxis = getAxis x, new Option({}, @opt.axis?.x)
+        yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
 
         xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         xAxis.attr("transform", "translate(0,#{@height})")
@@ -684,12 +653,10 @@ class Veasy
             d = this.__data__
             tooltipFormat(d)
 
-    xaxis = d3.svg.axis().scale(x)
-    yaxis = d3.svg.axis().scale(y).orient("left")
-    xaxis.tickFormat(@opt.axis.x.format) if @opt.axis?.x?.format?
-    yaxis.tickFormat(@opt.axis.y.format) if @opt.axis?.y?.format?
-
     if not @svg.select('g.xaxis')[0][0]
+      xaxis = getAxis x, new Option({}, @opt.axis?.x)
+      yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
+
       xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
         .attr("transform", "translate(0,#{@height})")
         .selectAll("path")
@@ -701,94 +668,6 @@ class Veasy
   #
   # ### draw scatterMatrix
   #
-  # drawScatterMatrix: (serie, opt = {})->
-  #   opt = new Option @opt, opt
-
-  #   attrs = (k for k of serie.data[0])
-  #   padding = 5
-  #   margin  = 10
-  #   r = 4
-
-  #   width = 0|((@width - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
-  #   height = 0|((@height - (padding * (attrs.length - 1))) / attrs.length) - margin * 2
-
-  #   for k1, idx1 in attrs
-
-  #     for k2, idx2 in attrs
-  #       matrix = @svg.append('g').attr('class', 'scattermatrix')
-  #         .attr('width', width).attr('height', height)
-  #         .attr('transform', (d)->
-  #           "translate(#{(width + padding + margin * 2) * idx2}, #{(height + padding + margin * 2) * idx1})")
-
-  #       type1 = serie.data[0][k1].constructor.name
-  #       type2 = serie.data[0][k2].constructor.name
-
-  #       scales1 = (if type1 is 'Date' then d3.time.scale() else d3.scale.linear())
-  #         .range([width, 0])
-  #         .domain(d3.extent(serie.data, (d)-> d[k1]))
-  #       scales2 = (if type2 is 'Date' then d3.time.scale() else d3.scale.linear())
-  #         .range([0, height])
-  #         .domain(d3.extent(serie.data, (d)-> d[k2]))
-
-  #       if idx2 is 0
-  #         text = matrix.append('text').text(attrs[idx1])
-  #         text.attr('transform', "rotate(-90) translate(-#{height}, -40)")
-  #         yaxis = d3.svg.axis().scale(scales1).orient('left')
-  #           .ticks(5)
-  #         if type1 is 'Date'
-  #           yaxis.tickFormat(d3.time.format("%y/%m/%d"))
-  #         yAxis = matrix.append('g')
-  #           .attr('class', 'yaxis')
-  #           .call(yaxis)
-  #         yAxis.selectAll('path').attr('fill', 'none')
-
-  #       if idx1 is 0
-  #         matrix.append('text').text(attrs[idx2])
-  #           .attr('transform', "translate(0, -40)")
-  #         xaxis = d3.svg.axis().scale(scales2).orient('top')
-  #           .ticks(5)
-  #         if type2 is 'Date'
-  #           xaxis.tickFormat(d3.time.format("%y/%m/%d"))
-  #         xAxis = matrix.append('g')
-  #           .attr('class', 'xaxis')
-  #           .call(xaxis)
-  #         xAxis.selectAll('path').attr('fill', 'none')
-  #         xAxis.selectAll('text').attr('transform', 'rotate(-90) translate(20, 10)')
-
-  #       matrix.append('rect')
-  #         .attr('width', width + r * 2)
-  #         .attr('height', height + r * 2)
-  #         .attr('transform', "translate(#{-r}, #{-r})")
-  #         .attr('stroke', 'black')
-  #         .attr('fill', 'none')
-
-  #       if idx1 is idx2
-  #         color = d3.scale.category10()(0)
-  #         extent = d3.extent(serie.data, (d)-> d[k1])
-  #         scaleRange = d3.scale.linear().domain(extent)
-  #           .range([0, 9])
-  #         data = d3.nest().key((d)-> 0|scaleRange(d[k1]) ).sortKeys((a, b)-> a - b)
-  #           .rollup((vals)-> vals.length).entries(serie.data)
-  #         scale = d3.scale.linear().domain([0, d3.extent(data, (d)-> d.values)[1]])
-  #           .range([height, 0])
-
-  #         matrix.append('g').selectAll('rect').data(data).enter()
-  #           .append('rect')
-  #           .attr('width', (width + r * 2) / data.length)
-  #           .attr('height', (d)-> height - scale(d.values))
-  #           .attr('x', (d, idx)-> idx * (width + r * 2) / data.length - r)
-  #           .attr('y', (d)-> scale(d.values) + r)
-  #           .attr('fill', color)
-  #         continue
-
-  #       matrix.append('g').selectAll('circle.scatter')
-  #         .data(serie.data).enter()
-  #         .append('circle').attr('class', 'scatter')
-  #         .attr('cy', (d)-> scales1(d[k1]))
-  #         .attr('cx', (d)-> scales2(d[k2]))
-  #         .attr('r', 4)
-  #         .attr('fill', 'none').attr('stroke', 'black')
-
   drawScatterMatrix: (series, opt = {})->
     mergedSeries = @getMergedSeries series
     opt = new Option @opt, opt
@@ -884,8 +763,6 @@ class Veasy
             .attr('r', r)
             .attr('fill', colors(idx)).attr('stroke', 'none')
 
-
-
   #
   # ### draw bubble
   #
@@ -906,8 +783,16 @@ class Veasy
         @_y(d)
       )
 
+# Axis utility
+getAxis = (scale, opt = {})->
+  axis = d3.svg.axis().scale(scale)
+  for attr, value of opt
+    if typeof axis[attr] is 'function'
+      axis[attr] value
+  axis
+
 Veasy.Option = class Option
-  # overwrite value after options
+  # overwrite opt after options
   constructor: (opts...)->
     for opt in opts
       for k, v of opt

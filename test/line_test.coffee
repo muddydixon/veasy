@@ -1,7 +1,7 @@
 describe 'line chart', ->
   baseid = 'line'
   id = 0
-  
+
   seriesData = [0..3].map (id)->
     name: "series #{id}"
     data: [0..100].map (i)->
@@ -13,7 +13,7 @@ describe 'line chart', ->
       x: 0|Math.random() * 1000
       y: 0|Math.random() * 1000
   monochrom = ["#000", "#333", "#666", "#999", "#CCC"]
-    
+
   beforeEach ->
     this.__id__ = id++
     $('<div>', {id: "#{baseid}_#{this.__id__}"})
@@ -27,7 +27,7 @@ describe 'line chart', ->
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawLine seriesData
 
-    lines = chart.find('path.line') 
+    lines = chart.find('path.line')
     expect(lines).have.length 4
     for line, idx in lines
       expect($(line).attr('d')).not.contain "NaN"
@@ -41,26 +41,27 @@ describe 'line chart', ->
     sales.x((d)-> d.x).y((d)-> d.y)
     sales.drawLine pointData
 
-    lines = chart.find('path.line') 
+    lines = chart.find('path.line')
     expect(lines).have.length 4
     for line, idx in lines
       expect($(line).attr('d')).not.contain "NaN"
-    
+
   it 'basically point　data with point', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart,
       sort: (a, b)-> a.x - b.x
-      withPoint: true
+      withPoint:
+        size: 3
       tooltip:
         format: (d)-> "x = #{d.x}"
     sales.x((d)-> d.x).y((d)-> d.y)
     sales.drawLine pointData
 
-    lines = chart.find('path.line') 
+    lines = chart.find('path.line')
     expect(lines).have.length 4
     for line, idx in lines
       expect($(line).attr('d')).not.contain "NaN"
-    
+
   it 'error uncorresponding accessor', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
@@ -75,12 +76,12 @@ describe 'line chart', ->
     sales = new Veasy chart
     sales.x((d)-> d.time).y((d)-> d.value).color((d, idx, sid)-> monochrom[sid])
     sales.drawLine seriesData
-  
+
     lines = chart.find('path.line')
     expect(lines).have.length 4
     for line, idx in lines
       expect($(line).attr('stroke')).to.be.eql monochrom[idx]
-      
+
   it 'custom color of each serie', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
@@ -106,12 +107,11 @@ describe 'line chart', ->
         y:
           format: (d)->
             "#{d}円"
-            
+
     sales.x((d)-> d.time).y((d)-> d.value)
     sales.drawLine seriesData
 
-    lines = chart.find('path.line') 
+    lines = chart.find('path.line')
     expect(lines).have.length 4
     for line, idx in lines
       expect($(line).attr('d')).not.contain "NaN"
-

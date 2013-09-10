@@ -444,7 +444,9 @@ describe('line chart', function() {
       sort: function(a, b) {
         return a.x - b.x;
       },
-      withPoint: true,
+      withPoint: {
+        size: 3
+      },
       tooltip: {
         format: function(d) {
           return "x = " + d.x;
@@ -561,9 +563,10 @@ describe('line chart', function() {
 });
 
 describe('multiple chart', function() {
-  var baseid, id, monochrom, pointData, seriesData;
+  var baseid, id, monochrom, pointData, seriesData, ymd;
   baseid = 'multi';
   id = 0;
+  ymd = d3.time.format('%y/%m/%d');
   seriesData = [0, 1, 2, 3].map(function(id) {
     var _i, _results;
     return {
@@ -607,16 +610,24 @@ describe('multiple chart', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
-      height: 800,
-      margin: [50, 300]
+      height: 400,
+      margin: [50, 50],
+      axis: {
+        x: {
+          ticks: 8,
+          tickFormat: function(d) {
+            return ymd(new Date(d));
+          }
+        }
+      }
     });
     sales.x(function(d) {
       return d.time;
     }).y(function(d) {
       return d.value;
     });
-    sales.drawBar(seriesData);
-    return sales.drawScatterPlot(seriesData);
+    sales.drawScatterPlot(seriesData);
+    return sales.drawBar(seriesData);
   });
 });
 
