@@ -10,9 +10,9 @@ class Veasy
     @$target = $(@$target) unless $target instanceof jQuery
     @$target.attr('height', @opt.height)
 
-    @margin = @opt.margin or [50, 50]
-    @width  = (@opt.width or @$target.width() or 400) - @margin[0] * 2
-    @height = (@opt.height or 300) - @margin[1] * 2
+    @margin = @parseMargin(@opt.margin or 50)
+    @width  = (@opt.width or @$target.width() or 400) - @margin.width
+    @height = (@opt.height or 300) - @margin.height
 
     @_x         = null
     @_y         = null
@@ -31,12 +31,37 @@ class Veasy
     @svg = d3.select(@$target.get(0)).select('svg')
     if not @svg[0][0]?
       @svg = d3.select(@$target.get(0)).append('svg').attr('id', @id)
-        .attr('width', @width + @margin[0] * 2)
-        .attr('height', @height + @margin[1] * 2)
+        .attr('width', @width + @margin.width)
+        .attr('height', @height + @margin.height)
         .append('g')
         .attr('width', @width)
         .attr('height', @height)
-        .attr('transform', "translate(#{@margin[0]}, #{@margin[1]})")
+        .attr('transform', "translate(#{@margin.left}, #{@margin.top})")
+
+  parseMargin: (margin)->
+    margins = null
+    if typeof margin is 'number'
+      margins = top: margin, right: margin, bottom: margin, left: margin
+    else if margin instanceof Array
+      if margin.length is 1
+        margins = top: margin[0], right: margin[0], bottom: margin[0], left: margin[0]
+      else if margin.length is 2
+        margins = top: margin[0], right: margin[1], bottom: margin[0], left: margin[1]
+      else if margin.length is 3
+        margins = top: margin[0], right: margin[1], bottom: margin[2], left: margin[1]
+      else
+        margins = top: margin[0], right: margin[1], bottom: margin[3], left: margin[3]
+    else if typeof margin is 'object'
+      if typeof margin.top is 'number' and typeof margin.right is 'number' and typeof margin.bottom is 'number' and typeof margin.left is 'number'
+        margins = margin
+
+    if not margins?
+      throw new Error("margin require number or [number]")
+
+    margins.width = margins.left + margins.right
+    margins.height = margins.top + margins.bottom
+
+    margins
 
   #
   # ### accessors
@@ -648,15 +673,15 @@ class Veasy
     opt = new Option @opt, opt
 
     @svg.attr('transform', '')
-      .attr('width', @width + @margin[0] * 2)
-      .attr('height', @height + @margin[1] * 2)
+      .attr('width', @width + @margin.width)
+      .attr('height', @height + @margin.height)
 
-    radius = Math.min((@width + @margin[0] * 2) / series.length, (@height + @margin[1] * 2)) / 2
+    radius = Math.min((@width + @margin.width) / series.length, (@height + @margin.height)) / 2
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
 
     @xScale = x = d3.scale.ordinal()
-      .rangeBands([0, @width + @margin[0] * 2], 0.1)
+      .rangeBands([0, @width + @margin.width], 0.1)
       .domain((serie.name for serie in series))
 
     category10 = d3.scale.category10()
