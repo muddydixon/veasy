@@ -514,7 +514,7 @@ class Veasy
     do (mergedSeries)=>
       labels = {}
       labels[@_x(dat)] = 1 for dat in mergedSeries
-      allLabels = (label for label of labels).sort()
+      allLabels = (label for label of labels).sort(@opt.sort)
     allYrange = d3.extent mergedSeries, @_y
 
     xType = String
