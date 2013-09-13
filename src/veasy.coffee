@@ -116,6 +116,7 @@ class Veasy
   legend: (position)->
     @_legend =
       position: position
+    this
 
   appendLegend: (series, color)->
     return unless series? and series.length > 0
