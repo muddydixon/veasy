@@ -201,9 +201,9 @@ class Veasy
     return @errorHandler new Error "accessor y required" unless @_y
 
     if typeof @_x(data) is 'undefined'
-      return @errorHandler new Veasy.AccessorError @_x, @_y, data
+      return @errorHandler new AccessorError @_x, @_y, data
     if typeof @_y(data) is 'undefined'
-      return @errorHandler new Veasy.AccessorError @_x, @_y, data
+      return @errorHandler new AccessorError @_x, @_y, data
 
   #
   # ### inhibit
@@ -661,6 +661,136 @@ class Veasy
           tickWidth = d3.max tickLabel, (d)-> $(d).width()
           yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
           yTitle.attr('transform', "rotate(-90)")
+
+    @appendLegend(series)
+
+  #
+  # ### box plot
+  #
+  drawBox: (series, opt = {})->
+    return new AccessorError "", @_y, data unless typeof @_y is 'function' and @_y(series[0].data[0])?
+    mergedSeries = @getMergedSeries series
+    opt = new Option @opt, opt
+
+    allLabels = series.map (d)-> d.name
+    allYrange = d3.extent mergedSeries, @_y
+
+    xType = String
+    yType = Number
+
+    @xScale = x = d3.scale.ordinal()
+    @yScale = y = d3.scale[opt.yscale or "linear"]()
+
+    x.rangeBands([0, @width], 0.1).domain(allLabels)
+    y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
+      .range([@height, 0])
+
+    bandWidth = x.rangeBand()
+
+    category10 = d3.scale.category10()
+    series.forEach (serie, sid)=>
+      if @_color
+        color = (d, idx)=>
+          @_color(d, idx, sid)
+      else if serie.opt?.color?
+        color = (d, idx)-> serie.opt.color
+      else
+        color = (d, idx)->
+          category10(sid)
+
+      data = serie.data.map((d)=> @_y(d)).sort (a, b)-> a - b
+
+      median = d3.median data
+      first = d3.quantile data, 0.25
+      third = d3.quantile data, 0.75
+      hinge = third - first
+      min = Math.max Math.min.apply(Math, data), first - 1.5 * hinge
+      max = Math.min Math.max.apply(Math, data), third + 1.5 * hinge
+
+      outlier = data.filter (d)-> d > max or d < min
+
+      width = bandWidth * 0.8
+
+      box = @svg.append('g')
+        .attr('class', 'box serie-#{sid}"')
+        .attr('transform', "translate(#{x(serie.name)}, 0)")
+      box[0][0].__data__ =
+        median: median
+        first: first
+        third: third
+        hinge: hinge
+        min: min
+        max: max
+        outlier: outlier
+
+
+
+      box.append('rect')
+        .attr('x', 0).attr('y', y(third))
+        .attr('width', width).attr('height', y(first) - y(third))
+        .attr('fill', 'white').attr('stroke', color).attr('stroke-width', 2)
+      # median
+      box.append('line').attr('stroke', color)
+        .attr('x1', 0).attr('y1', y(median))
+        .attr('x2', width).attr('y2', y(median))
+        .attr('stroke-width', 3)
+      # min
+      box.append('line').attr('stroke', color)
+        .attr('x1', width / 2).attr('y1', y(first))
+        .attr('x2', width / 2).attr('y2', y(min))
+      box.append('line').attr('stroke', color)
+        .attr('x1', width * 0.25).attr('y1', y(min))
+        .attr('x2', width * 0.75).attr('y2', y(min))
+      # max
+      box.append('line').attr('stroke', color)
+        .attr('x1', width / 2).attr('y1', y(max))
+        .attr('x2', width / 2).attr('y2', y(third))
+      box.append('line').attr('stroke', color)
+        .attr('x1', width * 0.25).attr('y1', y(max))
+        .attr('x2', width * 0.75).attr('y2', y(max))
+      box.selectAll('circle.outlier').data(outlier).enter()
+        .append('circle').attr('class', 'outlier')
+        .attr('cx', width / 2).attr('cy', (d)-> y(d))
+        .attr('r', 3)
+        .attr('stroke', color).attr('fill', 'none')
+
+
+    if tooltipFormat = @opt.tooltip?.format
+      $("svg##{@id} g.box rect").tipsy
+        gravity: @opt.tooltip.gravity or if opt.transpose then 'w' else 's'
+        html: true
+        title: ()->
+          d = this.__data__
+          tooltipFormat(d)
+
+    if not @svg.select('g.xaxis')[0][0]
+      xaxis = getAxis x, new Option({}, @opt.axis?.x)
+      yaxis = getAxis y, new Option({orient: 'left'}, @opt.axis?.y)
+
+      xAxis = @svg.append("g").attr('class', 'xaxis').call(xaxis)
+        .attr("transform", "translate(0,#{@height})")
+      xAxis.selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+      yAxis = @svg.append("g").attr('class', 'yaxis').call(yaxis)
+      yAxis.selectAll("path")
+        .attr("fill", "none").attr("stroke", "black")
+
+      if @opt.axis?.x?.title
+        xTitle = xAxis.append('text').attr('class', 'title')
+          .text(@opt.axis.x.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.xaxis text.title').width()
+        height = @$target.find('svg g.xaxis text.title').height()
+        xTitle.attr('dx', (@width - width) / 2).attr('dy', height * 2)
+
+      if @opt.axis?.y?.title
+        yTitle = yAxis.append('text').attr('class', 'title')
+          .text(@opt.axis.y.title).style('text-anchor', 'middle')
+        width = @$target.find('svg g.yaxis text.title').width()
+        height = @$target.find('svg g.yaxis text.title').height()
+        tickLabel = @$target.find('svg g.yaxis g.tick text')
+        tickWidth = d3.max tickLabel, (d)-> $(d).width()
+        yTitle.attr('dx', -(@height - height) / 2).attr('dy', - height - tickWidth)
+        yTitle.attr('transform', "rotate(-90)")
 
     @appendLegend(series)
 
