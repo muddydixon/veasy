@@ -23,7 +23,7 @@ describe 'bar chart', ->
       tooltip:
         format: (d)->
           d.value
-    sales.x((d)-> d.label).y((d)-> d.value).legend('vsw')
+    sales.x((d)-> d.label).y((d)-> d.value).legend('swx3')
     sales.drawBar pointData
 
     expect(chart.find('rect.bar')).have.length 40

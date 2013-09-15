@@ -128,7 +128,7 @@ describe('bar chart', function() {
       return d.label;
     }).y(function(d) {
       return d.value;
-    }).legend('vsw');
+    }).legend('swx3');
     sales.drawBar(pointData);
     expect(chart.find('rect.bar')).have.length(40);
     _results = [];
