@@ -155,6 +155,20 @@ class Veasy
         .attr('dx', padding * 2)
       width = twidth + padding * 4
       height = (theight + padding) * $list.length + padding * 2
+    else if rows = @_legend.position?.match /(\d+)x/
+      rows = rows[1]
+      list
+        .attr('dy', (d, idx)-> theight + (theight + padding) * (0|idx / rows))
+        .attr('dx', (d, idx)-> padding * 2 + (twidth + padding) * (idx % rows))
+      width = (twidth + padding) * rows + padding * 4
+      height = (theight + padding) * (0|$list.length / rows + 0.9) + padding * 2
+    else if cols = @_legend.position?.match /x(\d+)/
+      cols = cols[1]
+      list
+        .attr('dy', (d, idx)-> theight + (theight + padding) * (idx % cols))
+        .attr('dx', (d, idx)-> padding * 2 + (twidth + padding) * (0|idx / cols))
+      width = (twidth + padding) * (0|$list.length / cols + 0.9) + padding * 4
+      height = (theight + padding) * cols + padding * 2
     else
       list
         .attr('dy', theight)
