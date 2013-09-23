@@ -572,12 +572,14 @@ class Veasy
     @xScale = x = d3.scale.ordinal()
     @yScale = y = d3.scale[opt.yscale or "linear"]()
 
+    barMargin = if opt.barMargin? then opt.barMargin else 0.1
+
     if opt.transpose
-      x.rangeBands([0, @height], 0.1).domain(allLabels)
+      x.rangeBands([0, @height], barMargin).domain(allLabels)
       y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
         .range([0, @width])
     else
-      x.rangeBands([0, @width], 0.1).domain(allLabels)
+      x.rangeBands([0, @width], barMargin).domain(allLabels)
       y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
         .range([@height, 0])
 
