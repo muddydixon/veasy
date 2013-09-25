@@ -38,6 +38,9 @@ describe 'line chart', ->
       sort: (a, b)-> a.x - b.x
       tooltip:
         format: (d)-> "x = #{d.x}"
+      axis:
+        x:
+          title: "x 軸のみタイトル"
     sales.x((d)-> d.x).y((d)-> d.y)
     sales.drawLine pointData
 
@@ -54,6 +57,12 @@ describe 'line chart', ->
         size: 3
       tooltip:
         format: (d)-> "x = #{d.x}"
+      width: 800
+      height: 300
+      margin: [100, 100]
+      axis:
+        y:
+          title: "y軸のみタイトル"
     sales.x((d)-> d.x).y((d)-> d.y)
     sales.drawLine pointData
 

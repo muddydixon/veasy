@@ -73,7 +73,9 @@ describe('area chart', function() {
     var chart, sales;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
-      margin: [100, 50],
+      margin: [100, 100],
+      height: 300,
+      width: 1200,
       axis: {
         x: {
           title: "タイトル X 軸"
@@ -180,9 +182,9 @@ describe('bar chart', function() {
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
       transpose: true,
-      margin: [100, 50],
+      margin: [100, 100],
       ylim: [0, 1500],
-      width: 500,
+      width: 600,
       height: 600,
       axis: {
         x: {
@@ -535,6 +537,11 @@ describe('line chart', function() {
         format: function(d) {
           return "x = " + d.x;
         }
+      },
+      axis: {
+        x: {
+          title: "x 軸のみタイトル"
+        }
       }
     });
     sales.x(function(d) {
@@ -565,6 +572,14 @@ describe('line chart', function() {
       tooltip: {
         format: function(d) {
           return "x = " + d.x;
+        }
+      },
+      width: 800,
+      height: 300,
+      margin: [100, 100],
+      axis: {
+        y: {
+          title: "y軸のみタイトル"
         }
       }
     });
