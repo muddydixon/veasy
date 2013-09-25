@@ -145,8 +145,8 @@ class Veasy
       ).attr('stroke', color)
 
     $list = @$target.find('svg g g.legend text')
-    twidth = d3.max $list, (d)-> $(d).width()
-    theight = d3.max $list, (d)-> $(d).height()
+    twidth = d3.max $list, (d)-> d.getBBox().width
+    theight = d3.max $list, (d)-> d.getBBox().height
     padding = theight * 0.2
 
     if @_legend.position?.match 'v'
