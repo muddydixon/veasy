@@ -535,6 +535,11 @@ describe('line chart', function() {
         format: function(d) {
           return "x = " + d.x;
         }
+      },
+      axis: {
+        x: {
+          title: "x 軸のみタイトル"
+        }
       }
     });
     sales.x(function(d) {
@@ -565,6 +570,14 @@ describe('line chart', function() {
       tooltip: {
         format: function(d) {
           return "x = " + d.x;
+        }
+      },
+      width: 800,
+      height: 300,
+      margin: [100, 100],
+      axis: {
+        y: {
+          title: "y軸のみタイトル"
         }
       }
     });

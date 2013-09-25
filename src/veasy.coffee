@@ -353,6 +353,7 @@ class Veasy
       if @opt.axis?.y?.title
         yTitle = yAxis.append('text').attr('class', 'title')
           .text(@opt.axis?.y?.title).style('text-anchor', 'start')
+        width = @$target.find('svg g.yaxis text.title')[0].getBBox().width
         height = @$target.find('svg g.yaxis text.title')[0].getBBox().height
         tickLabel = @$target.find('svg g.yaxis g.tick text')
         tickWidth = d3.max tickLabel, (d)-> d.getBBox().width
@@ -448,6 +449,7 @@ class Veasy
       if @opt.axis?.y?.title
         yTitle = yAxis.append('text').attr('class', 'title')
           .text(@opt.axis?.y?.title).style('text-anchor', 'start')
+        width = @$target.find('svg g.yaxis text.title')[0].getBBox().width
         height = @$target.find('svg g.yaxis text.title')[0].getBBox().height
         tickLabel = @$target.find('svg g.yaxis g.tick text')
         tickWidth = d3.max tickLabel, (d)-> d.getBBox().width
@@ -539,6 +541,7 @@ class Veasy
       if @opt.axis?.y?.title
         yTitle = yAxis.append('text').attr('class', 'title')
           .text(@opt.axis?.y?.title).style('text-anchor', 'start')
+        width = @$target.find('svg g.yaxis text.title')[0].getBBox().width
         height = @$target.find('svg g.yaxis text.title')[0].getBBox().height
         tickLabel = @$target.find('svg g.yaxis g.tick text')
         tickWidth = d3.max tickLabel, (d)-> d.getBBox().width
@@ -681,6 +684,7 @@ class Veasy
         if @opt.axis?.y?.title
           yTitle = yAxis.append('text').attr('class', 'title')
             .text(@opt.axis?.y?.title).style('text-anchor', 'start')
+          width = @$target.find('svg g.yaxis text.title')[0].getBBox().width
           height = @$target.find('svg g.yaxis text.title')[0].getBBox().height
           tickLabel = @$target.find('svg g.yaxis g.tick text')
           tickWidth = d3.max tickLabel, (d)-> d.getBBox().width
@@ -813,6 +817,7 @@ class Veasy
       if @opt.axis?.y?.title
         yTitle = yAxis.append('text').attr('class', 'title')
           .text(@opt.axis?.y?.title).style('text-anchor', 'start')
+        width = @$target.find('svg g.yaxis text.title')[0].getBBox().width
         height = @$target.find('svg g.yaxis text.title')[0].getBBox().height
         tickLabel = @$target.find('svg g.yaxis g.tick text')
         tickWidth = d3.max tickLabel, (d)-> d.getBBox().width
@@ -1032,6 +1037,7 @@ class Veasy
       if @opt.axis?.y?.title
         yTitle = yAxis.append('text').attr('class', 'title')
           .text(@opt.axis?.y?.title).style('text-anchor', 'start')
+        width = @$target.find('svg g.yaxis text.title')[0].getBBox().width
         height = @$target.find('svg g.yaxis text.title')[0].getBBox().height
         tickLabel = @$target.find('svg g.yaxis g.tick text')
         tickWidth = d3.max tickLabel, (d)-> d.getBBox().width
