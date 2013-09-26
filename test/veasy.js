@@ -462,231 +462,438 @@ describe('flow chart', function() {
   });
 });
 
-describe('line chart', function() {
-  var baseid, id, monochrom, pointData, seriesData;
-  baseid = 'line';
-  id = 0;
-  seriesData = [0, 1, 2, 3].map(function(id) {
-    var _i, _results;
+var baseid, id, monochrom, pointData, seriesData;
+
+baseid = 'line';
+
+id = 0;
+
+seriesData = [0, 1, 2, 3].map(function(id) {
+  var _i, _results;
+  return {
+    name: "series " + id,
+    data: (function() {
+      _results = [];
+      for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+      return _results;
+    }).apply(this).map(function(i) {
+      return {
+        time: new Date(2013, 0, i),
+        value: 0 | Math.random() * 1000
+      };
+    })
+  };
+});
+
+pointData = [0, 1, 2, 3].map(function(id) {
+  var data, _i, _results;
+  data = (function() {
+    _results = [];
+    for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
+    return _results;
+  }).apply(this).map(function(i) {
     return {
-      name: "series " + id,
-      data: (function() {
-        _results = [];
-        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
-        return _results;
-      }).apply(this).map(function(i) {
-        return {
-          time: new Date(2013, 0, i),
-          value: 0 | Math.random() * 1000
-        };
-      })
+      x: 0 | Math.random() * 1000,
+      y: 0 | Math.random() * 1000
     };
   });
-  pointData = [0, 1, 2, 3].map(function(id) {
-    var _i, _results;
-    return {
-      name: "series " + id,
-      data: (function() {
-        _results = [];
-        for (_i = 0; _i <= 100; _i++){ _results.push(_i); }
-        return _results;
-      }).apply(this).map(function(i) {
-        return {
-          x: 0 | Math.random() * 1000,
-          y: 0 | Math.random() * 1000
-        };
-      })
-    };
-  });
-  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  return {
+    name: "series " + id,
+    data: data.sort(function(a, b) {
+      return a.x - b.x;
+    })
+  };
+});
+
+monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+
+describe('Line Chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
-  it('basically series', function() {
-    var chart, idx, line, lines, sales, _i, _len, _results;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
-    sales.x(function(d) {
-      return d.time;
-    }).y(function(d) {
-      return d.value;
-    }).legend('se');
-    sales.drawLine(seriesData);
-    lines = chart.find('path.line');
-    expect(lines).have.length(4);
-    _results = [];
-    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
-      line = lines[idx];
-      _results.push(expect($(line).attr('d')).not.contain("NaN"));
-    }
-    return _results;
+  afterEach(function() {
+    var _base;
+    return typeof (_base = $("#" + baseid + "_" + this.__id__)).remove === "function" ? _base.remove() : void 0;
   });
-  it('basically point data', function() {
-    var chart, idx, line, lines, sales, _i, _len, _results;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart, {
-      sort: function(a, b) {
-        return a.x - b.x;
-      },
-      tooltip: {
-        format: function(d) {
-          return "x = " + d.x;
-        }
-      },
-      axis: {
-        x: {
-          title: "x 軸のみタイトル"
-        }
+  describe('Basic Graph', function() {
+    it('Sequential Data', function() {
+      var chart, idx, line, lines, sales, _i, _len, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.time;
+      }).y(function(d) {
+        return d.value;
+      });
+      sales.drawLine(seriesData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('d')).not.contain("NaN"));
       }
+      return _results;
     });
-    sales.x(function(d) {
-      return d.x;
-    }).y(function(d) {
-      return d.y;
-    });
-    sales.drawLine(pointData);
-    lines = chart.find('path.line');
-    expect(lines).have.length(4);
-    _results = [];
-    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
-      line = lines[idx];
-      _results.push(expect($(line).attr('d')).not.contain("NaN"));
-    }
-    return _results;
-  });
-  it('basically point　data with point', function() {
-    var chart, idx, line, lines, sales, _i, _len, _results;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart, {
-      sort: function(a, b) {
-        return a.x - b.x;
-      },
-      withPoint: {
-        size: 3
-      },
-      tooltip: {
-        format: function(d) {
-          return "x = " + d.x;
-        }
-      },
-      width: 800,
-      height: 300,
-      margin: [100, 100],
-      axis: {
-        y: {
-          title: "y軸のみタイトル"
-        }
+    return it('Point Data', function() {
+      var chart, idx, line, lines, sales, _i, _len, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('d')).not.contain("NaN"));
       }
+      return _results;
     });
-    sales.x(function(d) {
-      return d.x;
-    }).y(function(d) {
-      return d.y;
-    });
-    sales.drawLine(pointData);
-    lines = chart.find('path.line');
-    expect(lines).have.length(4);
-    _results = [];
-    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
-      line = lines[idx];
-      _results.push(expect($(line).attr('d')).not.contain("NaN"));
-    }
-    return _results;
   });
-  it('error uncorresponding accessor', function() {
-    var chart, sales;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
-    sales.x(function(d) {
-      return d.x;
-    }).y(function(d) {
-      return d.y;
+  describe('with Legend', function() {
+    it('Position Bottom Right', function() {
+      var chart, idx, line, lines, sales, _i, _len;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      }).legend('se');
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
+      }
+      return expect(chart.find('g.legend')).have.length(1);
     });
-    return expect(function() {
-      return sales.drawLine(seriesData);
-    })["throw"](Error);
-  });
-  it('custom color', function() {
-    var chart, idx, line, lines, sales, _i, _len, _results;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
-    sales.x(function(d) {
-      return d.time;
-    }).y(function(d) {
-      return d.value;
-    }).color(function(d, idx, sid) {
-      return monochrom[sid];
+    return it('Position Upper Left', function() {
+      var chart, idx, line, lines, sales, _i, _len;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      }).legend('nw');
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
+      }
+      return expect(chart.find('g.legend')).have.length(1);
     });
-    sales.drawLine(seriesData);
-    lines = chart.find('path.line');
-    expect(lines).have.length(4);
-    _results = [];
-    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
-      line = lines[idx];
-      _results.push(expect($(line).attr('stroke')).to.be.eql(monochrom[idx]));
-    }
-    return _results;
   });
-  it('custom color of each serie', function() {
-    var chart, idx, line, lines, sales, serie, _i, _j, _len, _len1, _results;
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart);
-    sales.x(function(d) {
-      return d.time;
-    }).y(function(d) {
-      return d.value;
-    });
-    for (idx = _i = 0, _len = seriesData.length; _i < _len; idx = ++_i) {
-      serie = seriesData[idx];
-      serie.opt = {
-        color: monochrom[idx]
-      };
-    }
-    sales.drawLine(seriesData);
-    lines = chart.find('path.line');
-    expect(lines).have.length(4);
-    _results = [];
-    for (idx = _j = 0, _len1 = lines.length; _j < _len1; idx = ++_j) {
-      line = lines[idx];
-      _results.push(expect($(line).attr('stroke')).to.be.eql(monochrom[idx]));
-    }
-    return _results;
-  });
-  return it('with xaxis format', function() {
-    var chart, idx, line, lines, sales, ymd, _i, _len, _results;
-    ymd = d3.time.format('%y/%m/%d');
-    chart = $("#" + baseid + "_" + this.__id__);
-    sales = new Veasy(chart, {
-      axis: {
-        x: {
-          format: function(d) {
-            return ymd(d);
-          }
-        },
-        y: {
-          format: function(d) {
-            return "" + d + "円";
+  describe('with Axis Format', function() {
+    return it('custom format', function() {
+      var chart, idx, line, lines, sales, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        axis: {
+          x: {
+            tickFormat: function(d) {
+              return d + "グラム";
+            }
+          },
+          y: {
+            tickFormat: function(d) {
+              return d + "円";
+            }
           }
         }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
       }
+      _ref = chart.find(".xaxis .tick text");
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        text = _ref[_j];
+        expect($(text).text()).to.have.string('グラム');
+      }
+      _ref1 = chart.find(".yaxis .tick text");
+      _results = [];
+      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+        text = _ref1[_k];
+        _results.push(expect($(text).text()).to.have.string('円'));
+      }
+      return _results;
     });
-    sales.x(function(d) {
-      return d.time;
-    }).y(function(d) {
-      return d.value;
+  });
+  describe('with Axis Label', function() {
+    it('Both Axis', function() {
+      var chart, idx, line, lines, sales, _i, _len;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        axis: {
+          x: {
+            title: "X axis"
+          },
+          y: {
+            title: "Y axis"
+          }
+        }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
+      }
+      expect(chart.find('.xaxis text.title')).have.length(1);
+      return expect(chart.find('.yaxis text.title')).have.length(1);
     });
-    sales.drawLine(seriesData);
-    lines = chart.find('path.line');
-    expect(lines).have.length(4);
-    _results = [];
-    for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
-      line = lines[idx];
-      _results.push(expect($(line).attr('d')).not.contain("NaN"));
-    }
-    return _results;
+    it('X Axis Only', function() {
+      var chart, idx, line, lines, sales, _i, _len;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        axis: {
+          x: {
+            title: "X Axis"
+          }
+        }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
+      }
+      return expect(chart.find('.xaxis text.title')).have.length(1);
+    });
+    return it('Y Axis Only', function() {
+      var chart, idx, line, lines, sales, _i, _len;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        axis: {
+          y: {
+            title: "Y Axis"
+          }
+        }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
+      }
+      return expect(chart.find('.yaxis text.title')).have.length(1);
+    });
+  });
+  describe('with Point', function() {
+    it('radius 3px', function() {
+      var chart, idx, line, lines, sales, _i, _len, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        withPoint: {
+          size: 3
+        }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('d')).not.contain("NaN"));
+      }
+      return _results;
+    });
+    return it('radius 5px', function() {
+      var chart, idx, line, lines, sales, _i, _len, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        withPoint: {
+          size: 5
+        }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('d')).not.contain("NaN"));
+      }
+      return _results;
+    });
+  });
+  describe('with Tooltip', function() {
+    return it('specify Format', function(next) {
+      var chart, idx, line, lines, sales, target, _i, _len;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        tooltip: {
+          format: function(d) {
+            return JSON.stringify(d);
+          }
+        }
+      });
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      sales.drawLine(pointData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        expect($(line).attr('d')).not.contain("NaN");
+      }
+      expect($('div.tipsy')).have.length(0);
+      (target = chart.find('circle.serie-3').first()).trigger('mouseover');
+      expect($('div.tipsy')).have.length(1);
+      target.trigger('mouseout');
+      return setTimeout(function() {
+        expect($('div.tipsy')).have.length(0);
+        return next();
+      }, 300);
+    });
+  });
+  describe('Error', function() {
+    return it('error uncorresponding accessor', function() {
+      var chart, sales;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.x;
+      }).y(function(d) {
+        return d.y;
+      });
+      return expect(function() {
+        return sales.drawLine(seriesData);
+      })["throw"](Error);
+    });
+  });
+  return describe('Color Accessor', function() {
+    it('custom color', function() {
+      var chart, idx, line, lines, sales, _i, _len, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.time;
+      }).y(function(d) {
+        return d.value;
+      }).color(function(d, idx, sid) {
+        return monochrom[sid];
+      });
+      sales.drawLine(seriesData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('stroke')).to.be.eql(monochrom[idx]));
+      }
+      return _results;
+    });
+    it('custom color of each serie', function() {
+      var chart, idx, line, lines, sales, serie, _i, _j, _len, _len1, _results;
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart);
+      sales.x(function(d) {
+        return d.time;
+      }).y(function(d) {
+        return d.value;
+      });
+      for (idx = _i = 0, _len = seriesData.length; _i < _len; idx = ++_i) {
+        serie = seriesData[idx];
+        serie.opt = {
+          color: monochrom[idx]
+        };
+      }
+      sales.drawLine(seriesData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _j = 0, _len1 = lines.length; _j < _len1; idx = ++_j) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('stroke')).to.be.eql(monochrom[idx]));
+      }
+      return _results;
+    });
+    return it('with xaxis format', function() {
+      var chart, idx, line, lines, sales, ymd, _i, _len, _results;
+      ymd = d3.time.format('%y/%m/%d');
+      chart = $("#" + baseid + "_" + this.__id__);
+      sales = new Veasy(chart, {
+        axis: {
+          x: {
+            format: function(d) {
+              return ymd(d);
+            }
+          },
+          y: {
+            format: function(d) {
+              return "" + d + "円";
+            }
+          }
+        }
+      });
+      sales.x(function(d) {
+        return d.time;
+      }).y(function(d) {
+        return d.value;
+      });
+      sales.drawLine(seriesData);
+      lines = chart.find('path.line');
+      expect(lines).have.length(4);
+      _results = [];
+      for (idx = _i = 0, _len = lines.length; _i < _len; idx = ++_i) {
+        line = lines[idx];
+        _results.push(expect($(line).attr('d')).not.contain("NaN"));
+      }
+      return _results;
+    });
   });
 });
 
