@@ -44,6 +44,7 @@ describe('area chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -111,6 +112,7 @@ describe('bar chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -284,6 +286,48 @@ describe('bar chart', function() {
   });
 });
 
+describe('bar stack chart', function() {
+  var baseid, id, monochrom, pointData;
+  baseid = 'barstack';
+  id = 0;
+  pointData = [0, 1, 2, 3].map(function(id) {
+    return {
+      name: "series " + id,
+      data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function(i) {
+        return {
+          label: "category" + i,
+          value: 0 | 300 + Math.random() * 700
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      "class": "pane",
+      id: "" + baseid + "_" + this.__id__
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
+  });
+  return it('basically point', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      tooltip: {
+        format: function(d) {
+          return d.value;
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.label;
+    }).y(function(d) {
+      return d.value;
+    }).legend('swx3');
+    return sales.drawBarStack(pointData);
+  });
+});
+
 describe('box plot', function() {
   var baseid, id, monochrom, pointData;
   baseid = 'box';
@@ -349,6 +393,7 @@ describe('chart', function() {
   monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
   beforeEach(function() {
     return lineChart = $('<div>', {
+      "class": "pane",
       id: id
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -429,6 +474,7 @@ describe('flow chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -511,6 +557,7 @@ describe('Line Chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -938,6 +985,7 @@ describe('multiple chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -1029,6 +1077,7 @@ describe('pie chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -1141,6 +1190,7 @@ describe('scatter matrix', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -1204,6 +1254,7 @@ describe('scatter plot', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
@@ -1390,6 +1441,7 @@ describe('stack chart', function() {
   beforeEach(function() {
     this.__id__ = id++;
     return $('<div>', {
+      "class": "pane",
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });

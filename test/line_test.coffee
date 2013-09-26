@@ -17,7 +17,7 @@ monochrom = ["#000", "#333", "#666", "#999", "#CCC"]
 describe 'Line Chart', ->
   beforeEach ->
     this.__id__ = id++
-    $('<div>', {id: "#{baseid}_#{this.__id__}"})
+    $('<div>', {class: "pane", id: "#{baseid}_#{this.__id__}"})
       .append($('<h1>').text("#{this.test.parent.title}/#{this.__id__}")).appendTo $('body')
   afterEach ->
     $("##{baseid}_#{this.__id__}").remove?()
