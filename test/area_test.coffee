@@ -35,7 +35,7 @@ describe 'area chart', ->
   it 'legend', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
-    sales.x((d)-> d.time).y((d)-> d.value).legend('ne')
+    sales.x((d)-> d.time).y((d)-> d.value).legend({position:20})
     sales.drawArea seriesData
 
     # area = chart.find('path.line')
@@ -52,7 +52,7 @@ describe 'area chart', ->
           title: "タイトル X 軸"
         y:
           title: "タイトル Y 軸"
-    sales.x((d)-> d.time).y((d)-> d.value).legend('ne')
+    sales.x((d)-> d.time).y((d)-> d.value).legend({position:20})
     sales.drawArea seriesData
 
     # area = chart.find('path.line')

@@ -113,9 +113,12 @@ class Veasy
   #
   # ### legend
   #
-  legend: (position)->
-    @_legend =
-      position: position
+  legend: (args = {})->
+    unless args.position? or args.flow?
+      return this
+    @_legend = {}
+    @_legend.position = args.position if args.position?
+    @_legend.flow     = args.flow     if args.flow?
     this
 
   appendLegend: (series, color)->
@@ -145,29 +148,30 @@ class Veasy
       ).attr('stroke', color)
 
     $list = @$target.find('svg g g.legend text')
-    twidth = d3.max $list, (d)-> d.getBBox().width
+    twidth  = d3.max $list, (d)-> d.getBBox().width
     theight = d3.max $list, (d)-> d.getBBox().height
     padding = theight * 0.2
 
-    if @_legend.position?.match 'v'
+    flow = @_legend.flow
+    if flow? and typeof flow is 'string' and flow.match 'v'
       list
         .attr('dy', (d, idx)-> theight + idx * (theight + padding))
         .attr('dx', padding * 2)
-      width = twidth + padding * 4
+      width  = twidth + padding * 4
       height = (theight + padding) * $list.length + padding * 2
-    else if rows = @_legend.position?.match /(\d+)x/
+    else if flow? and typeof flow is 'string' and rows = flow.match /(\d+)x/
       rows = rows[1]
       list
         .attr('dy', (d, idx)-> theight + (theight + padding) * (0|idx / rows))
         .attr('dx', (d, idx)-> padding * 2 + (twidth + padding) * (idx % rows))
-      width = (twidth + padding) * rows + padding * 4
+      width  = (twidth + padding) * rows + padding * 4
       height = (theight + padding) * (0|$list.length / rows + 0.9) + padding * 2
-    else if cols = @_legend.position?.match /x(\d+)/
+    else if flow? and typeof flow is 'string' and cols = flow.match /x(\d+)/
       cols = cols[1]
       list
         .attr('dy', (d, idx)-> theight + (theight + padding) * (idx % cols))
         .attr('dx', (d, idx)-> padding * 2 + (twidth + padding) * (0|idx / cols))
-      width = (twidth + padding) * (0|$list.length / cols + 0.9) + padding * 4
+      width  = (twidth + padding) * (0|$list.length / cols + 0.9) + padding * 4
       height = (theight + padding) * cols + padding * 2
     else
       list
@@ -175,22 +179,34 @@ class Veasy
         .attr('dx', (d, idx)-> idx * (twidth + padding) + padding * 2)
       width = (twidth + padding) * $list.length + padding * 4
       height = theight + padding * 2
-
     rect.attr('width', width).attr('height', height)
 
-    left = (@width - width) / 2
+    left = (@width  - width)  / 2
     top  = (@height - height) / 2
 
-    if @_legend.position?.match 'n'
-      top = 20
-    if @_legend.position?.match 'w'
-      left = 20
-    if @_legend.position?.match 's'
-      top = @height - height - 20
-    if @_legend.position?.match 'e'
-      left = @width - width - 20
-
+    position = @_legend.position
+    if position? and typeof position is 'number'
+      top = position; left = position
+    else if position? and typeof position is 'string'
+      if position.match 'n'
+        top = 20
+      if position.match 'w'
+        left = 20
+      if position.match 's'
+        top = @height - height - 20
+      if position.match 'e'
+        left = @width - width - 20
+    else if position? and position instanceof Array
+      if position.length is 1
+        top = position[0]; left = position[0]
+      else if position.length is 2
+        top = position[0]; left = position[1]
+      else if position.length is 3
+        top = @height - height - position[2]; left = position[1]
+      else
+        top = @height - height - position[2]; left = @width - width - position[3]
     legend.attr('transform', "translate(#{left}, #{top})")
+
     legend.on 'mouseover', (d)->
       d3.select(this).style('opacity', 0.3)
     legend.on 'mouseout', (d)->
