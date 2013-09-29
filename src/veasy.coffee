@@ -837,11 +837,11 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-    @svg.attr('transform', '')
-      .attr('width', @width + @margin.width)
-      .attr('height', @height + @margin.height)
+    @xScale = x = d3.scale.ordinal()
+      .rangeBands([0, @width + @margin.width], 0.1)
+      .domain((serie.name for serie in series))
 
-    radius = Math.min((@width + @margin.width) / series.length, (@height + @margin.height)) / 2
+    radius = Math.min(x.rangeBand() / 2, @height / 2)
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
 
@@ -850,6 +850,7 @@ class Veasy
       .domain((serie.name for serie in series))
 
     category10 = d3.scale.category10()
+    centeringOffset = x.rangeBand() / 2 - radius * 1.5
     series.forEach (serie, sid)=>
       if @_color
         color = @_color
@@ -865,7 +866,7 @@ class Veasy
 
       g = @svg.selectAll("g.arc.serie-#{sid}").data(pie(serie.data)).enter()
         .append('g').attr('class', "arc serie-#{sid}")
-        .attr('transform', "translate(#{radius + x(serie.name)},#{radius})")
+        .attr('transform', "translate(#{radius + x(serie.name) + centeringOffset} ,#{radius})")
       g.append('path')
         .attr('d', arc)
         .attr('fill', color)

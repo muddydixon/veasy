@@ -55,3 +55,9 @@ describe 'pie chart', ->
     expect(()->
       sales.drawPie pointData
     ).throw(Error)
+
+  it 'single', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart
+    sales.x((d)-> d.label).y((d)-> d.value)
+    sales.drawPie pointData.slice(0, 1)
