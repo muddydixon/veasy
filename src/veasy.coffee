@@ -144,7 +144,7 @@ class Veasy
           d.name
       ).attr('stroke', color)
 
-    $list = @$target.find('svg g g.legend text')
+    $list = $(list[0])
     twidth = d3.max $list, (d)-> d.getBBox().width
     theight = d3.max $list, (d)-> d.getBBox().height
     padding = theight * 0.2
@@ -195,6 +195,7 @@ class Veasy
       d3.select(this).style('opacity', 0.3)
     legend.on 'mouseout', (d)->
       d3.select(this).style('opacity', 0.9)
+    legend
 
   #
   # ### getMergedSeries
@@ -837,6 +838,8 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
+
+    @legend('v')
     @xScale = x = d3.scale.ordinal()
       .rangeBands([0, @width + @margin.width], 0.1)
       .domain((serie.name for serie in series))
@@ -877,6 +880,9 @@ class Veasy
         .on('mouseout', @clearInhibit('g.arc'))
         .on('touchend', @clearInhibit('g.arc'))
 
+      legend = @appendLegend(serie.data.map((d)=> {name: @_x(d)}))
+      legend.attr('transform', "translate(#{radius + x(serie.name) + centeringOffset + radius}, 0)")
+
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} path").tipsy
         gravity: @opt.tooltip.gravity or "s"
@@ -885,7 +891,6 @@ class Veasy
           d = this.__data__.data
           tooltipFormat(d)
 
-    @appendLegend(series, ()-> 'grey')
 
   #
   # ### draw flow chart
