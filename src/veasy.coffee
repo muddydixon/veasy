@@ -144,7 +144,7 @@ class Veasy
           d.name
       ).attr('stroke', color)
 
-    $list = @$target.find('svg g g.legend text')
+    $list = $(list[0])
     twidth = d3.max $list, (d)-> d.getBBox().width
     theight = d3.max $list, (d)-> d.getBBox().height
     padding = theight * 0.2
@@ -195,6 +195,7 @@ class Veasy
       d3.select(this).style('opacity', 0.3)
     legend.on 'mouseout', (d)->
       d3.select(this).style('opacity', 0.9)
+    legend
 
   #
   # ### getMergedSeries
@@ -572,12 +573,14 @@ class Veasy
     @xScale = x = d3.scale.ordinal()
     @yScale = y = d3.scale[opt.yscale or "linear"]()
 
+    barMargin = if opt.barMargin? then opt.barMargin else 0.1
+
     if opt.transpose
-      x.rangeBands([0, @height], 0.1).domain(allLabels)
+      x.rangeBands([0, @height], barMargin).domain(allLabels)
       y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
         .range([0, @width])
     else
-      x.rangeBands([0, @width], 0.1).domain(allLabels)
+      x.rangeBands([0, @width], barMargin).domain(allLabels)
       y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
         .range([@height, 0])
 
@@ -835,11 +838,13 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-    @svg.attr('transform', '')
-      .attr('width', @width + @margin.width)
-      .attr('height', @height + @margin.height)
 
-    radius = Math.min((@width + @margin.width) / series.length, (@height + @margin.height)) / 2
+    @legend('v')
+    @xScale = x = d3.scale.ordinal()
+      .rangeBands([0, @width + @margin.width], 0.1)
+      .domain((serie.name for serie in series))
+
+    radius = Math.min(x.rangeBand() / 2, @height / 2)
     outerMargin = opt.outerMargin or 10
     innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
 
@@ -848,6 +853,7 @@ class Veasy
       .domain((serie.name for serie in series))
 
     category10 = d3.scale.category10()
+    centeringOffset = x.rangeBand() / 2 - radius * 1.5
     series.forEach (serie, sid)=>
       if @_color
         color = @_color
@@ -863,7 +869,7 @@ class Veasy
 
       g = @svg.selectAll("g.arc.serie-#{sid}").data(pie(serie.data)).enter()
         .append('g').attr('class', "arc serie-#{sid}")
-        .attr('transform', "translate(#{radius + x(serie.name)},#{radius})")
+        .attr('transform', "translate(#{radius + x(serie.name) + centeringOffset} ,#{radius})")
       g.append('path')
         .attr('d', arc)
         .attr('fill', color)
@@ -874,6 +880,9 @@ class Veasy
         .on('mouseout', @clearInhibit('g.arc'))
         .on('touchend', @clearInhibit('g.arc'))
 
+      legend = @appendLegend(serie.data.map((d)=> {name: @_x(d)}))
+      legend.attr('transform', "translate(#{radius + x(serie.name) + centeringOffset + radius}, 0)")
+
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} path").tipsy
         gravity: @opt.tooltip.gravity or "s"
@@ -882,7 +891,6 @@ class Veasy
           d = this.__data__.data
           tooltipFormat(d)
 
-    @appendLegend(series, ()-> 'grey')
 
   #
   # ### draw flow chart

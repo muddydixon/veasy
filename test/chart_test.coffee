@@ -9,7 +9,7 @@ describe 'chart', ->
   monochrom = ["#000", "#333", "#666", "#999", "#CCC"]
 
   beforeEach ->
-    lineChart = $('<div>', {id: id})
+    lineChart = $('<div>', {class: "pane", id: id})
       .append($('<h1>').text("#{this.test.parent.title}/#{this.__id__}")).appendTo $('body')
   afterEach ->
     lineChart.remove?()

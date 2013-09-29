@@ -11,7 +11,7 @@ describe 'pie chart', ->
 
   beforeEach ->
     this.__id__ = id++
-    $('<div>', {id: "#{baseid}_#{this.__id__}"})
+    $('<div>', {class: "pane", id: "#{baseid}_#{this.__id__}"})
       .append($('<h1>').text("#{this.test.parent.title}/#{this.__id__}")).appendTo $('body')
   # afterEach ->
   #   $("##{baseid}_#{this.__id__}").remove?()
@@ -55,3 +55,9 @@ describe 'pie chart', ->
     expect(()->
       sales.drawPie pointData
     ).throw(Error)
+
+  it 'single', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart
+    sales.x((d)-> d.label).y((d)-> d.value)
+    sales.drawPie pointData.slice(0, 1)

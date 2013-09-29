@@ -1,7 +1,7 @@
 describe 'flow chart', ->
   baseid = 'flow'
   id = 0
-  
+
   fromNodes = [0..3].map (i)->
     name: "node #{i}"
     id: i
@@ -11,16 +11,16 @@ describe 'flow chart', ->
   links = []
   fromNodes.map (fromNode, fromIdx)->
     toNodes.map (toNode, toIdx)->
-      links.push 
+      links.push
         source: fromNode.id
         target: toNode.id
         value: 0|Math.random() * 1000
 
   monochrom = ["#000", "#333", "#666", "#999", "#CCC"]
-    
+
   beforeEach ->
     this.__id__ = id++
-    $('<div>', {id: "#{baseid}_#{this.__id__}"})
+    $('<div>', {class: "pane", id: "#{baseid}_#{this.__id__}"})
       .append($('<h1>').text("#{this.test.parent.title}/#{this.__id__}")).appendTo $('body')
   # afterEach ->
   #   $("##{baseid}_#{this.__id__}").remove?()
@@ -40,4 +40,3 @@ describe 'flow chart', ->
         format: (d)->
           "#{d.name}"
     sales.drawFlow {nodes: fromNodes.concat(toNodes), links: links}
-
