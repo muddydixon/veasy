@@ -23,7 +23,7 @@ describe 'pie chart', ->
       tooltip:
         format: (d, id)->
           "#{d.label}"
-    sales.x((d)-> d.label).y((d)-> d.value).legend('n')
+    sales.x((d)-> d.label).y((d)-> d.value).legend({position:[10, 100, 120, 100]})
     sales.drawPie pointData
 
     # expect(chart.find('g.arc')).have.length 40

@@ -23,7 +23,7 @@ describe 'bar chart', ->
       tooltip:
         format: (d)->
           d.value
-    sales.x((d)-> d.label).y((d)-> d.value).legend('swx3')
+    sales.x((d)-> d.label).y((d)-> d.value).legend({position:'sw', flow:'x3'})
     sales.drawBar pointData
 
     expect(chart.find('rect.bar')).have.length 40
@@ -86,7 +86,7 @@ describe 'bar chart', ->
           title: "僕のX軸"
         y:
           title: "あなたのy軸"
-    sales.x((d)-> d.label).y((d)-> d.value).legend('vsw')
+    sales.x((d)-> d.label).y((d)-> d.value).legend({position:'sw', flow:'v'})
     for serie, idx in pointData
       serie.opt =
         color: monochrom[idx]

@@ -66,7 +66,9 @@ describe('area chart', function() {
       return d.time;
     }).y(function(d) {
       return d.value;
-    }).legend('ne');
+    }).legend({
+      position: 20
+    });
     return sales.drawArea(seriesData);
   });
   return it('axis title', function() {
@@ -87,7 +89,9 @@ describe('area chart', function() {
       return d.time;
     }).y(function(d) {
       return d.value;
-    }).legend('ne');
+    }).legend({
+      position: 20
+    });
     return sales.drawArea(seriesData);
   });
 });
@@ -128,7 +132,10 @@ describe('bar chart', function() {
       return d.label;
     }).y(function(d) {
       return d.value;
-    }).legend('swx3');
+    }).legend({
+      position: 'sw',
+      flow: 'x3'
+    });
     sales.drawBar(pointData);
     expect(chart.find('rect.bar')).have.length(40);
     _results = [];
@@ -255,7 +262,10 @@ describe('bar chart', function() {
       return d.label;
     }).y(function(d) {
       return d.value;
-    }).legend('vsw');
+    }).legend({
+      position: 'sw',
+      flow: 'v'
+    });
     for (idx = _i = 0, _len = pointData.length; _i < _len; idx = ++_i) {
       serie = pointData[idx];
       serie.opt = {
@@ -513,7 +523,9 @@ describe('line chart', function() {
       return d.time;
     }).y(function(d) {
       return d.value;
-    }).legend('se');
+    }).legend({
+      position: 'se'
+    });
     sales.drawLine(seriesData);
     lines = chart.find('path.line');
     expect(lines).have.length(4);
@@ -839,7 +851,9 @@ describe('pie chart', function() {
       return d.label;
     }).y(function(d) {
       return d.value;
-    }).legend('n');
+    }).legend({
+      position: [10, 100, 120, 100]
+    });
     return sales.drawPie(pointData);
   });
   it('basically point with margin', function() {
@@ -1009,7 +1023,9 @@ describe('scatter plot', function() {
       return d.time;
     }).y(function(d) {
       return d.value;
-    }).legend('s');
+    }).legend({
+      position: 's'
+    });
     return sales.drawScatterPlot(seriesData);
   });
   it('basically series color accessor', function() {
@@ -1088,7 +1104,9 @@ describe('scatter plot', function() {
       return color(d.sales);
     }).symbol(function(d, idx, sid) {
       return symbol[sid % 7];
-    }).legend('es');
+    }).legend({
+      position: [10, 20]
+    });
     return sales.drawScatterPlot(seriesData);
   });
   it('basically series symbol accessor', function() {

@@ -28,7 +28,7 @@ describe 'scatter plot', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
     color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"])
-    sales.x((d)-> d.time).y((d)-> d.value).legend('s')
+    sales.x((d)-> d.time).y((d)-> d.value).legend({position:'s'})
     sales.drawScatterPlot seriesData
 
     # lines = chart.find('path.line')
@@ -99,7 +99,7 @@ describe 'scatter plot', ->
       .size((d)-> 0|d.cost)
       .color((d, idx, sid)-> color(d.sales))
       .symbol((d, idx, sid)-> symbol[sid % 7])
-      .legend('es')
+      .legend({position:[10,20]})
     sales.drawScatterPlot seriesData
 
     # lines = chart.find('path.line')
