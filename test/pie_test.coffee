@@ -23,7 +23,7 @@ describe 'pie chart', ->
       tooltip:
         format: (d, id)->
           "#{d.label}"
-    sales.x((d)-> d.label).y((d)-> d.value).legend('n')
+    sales.x((d)-> d.label).y((d)-> d.value).legend('vn')
     sales.drawPie pointData
 
     # expect(chart.find('g.arc')).have.length 40
@@ -38,7 +38,7 @@ describe 'pie chart', ->
         gravity: "w"
         format: (d, id)->
           "label = #{d.label}"
-    sales.x((d)-> d.label).y((d)-> d.value).color((d, idx)-> monochrom[idx])
+    sales.x((d)-> d.label).y((d)-> d.value).color((d, idx)-> monochrom[idx]).legend('vne')
     sales.drawPie pointData.slice(0, 3)
 
   it 'basically point with margin', ->
@@ -50,7 +50,7 @@ describe 'pie chart', ->
   it 'error uncorresponding accessor', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
-    sales.x((d)-> d.zz).y((d)-> d.y)
+    sales.x((d)-> d.zz).y((d)-> d.y).legend('vne')
 
     expect(()->
       sales.drawPie pointData
@@ -59,5 +59,5 @@ describe 'pie chart', ->
   it 'single', ->
     chart = $("##{baseid}_#{this.__id__}")
     sales = new Veasy chart
-    sales.x((d)-> d.label).y((d)-> d.value)
+    sales.x((d)-> d.label).y((d)-> d.value).legend('ne')
     sales.drawPie pointData.slice(0, 1)
