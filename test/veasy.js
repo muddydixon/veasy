@@ -1053,7 +1053,7 @@ describe('pie chart', function() {
       return d.label;
     }).y(function(d) {
       return d.value;
-    }).legend('n');
+    }).legend('vn');
     return sales.drawPie(pointData);
   });
   it('basically point with margin', function() {
@@ -1074,7 +1074,7 @@ describe('pie chart', function() {
       return d.value;
     }).color(function(d, idx) {
       return monochrom[idx];
-    });
+    }).legend('vne');
     return sales.drawPie(pointData.slice(0, 3));
   });
   it('basically point with margin', function() {
@@ -1098,7 +1098,7 @@ describe('pie chart', function() {
       return d.zz;
     }).y(function(d) {
       return d.y;
-    });
+    }).legend('vne');
     return expect(function() {
       return sales.drawPie(pointData);
     })["throw"](Error);
@@ -1111,7 +1111,7 @@ describe('pie chart', function() {
       return d.label;
     }).y(function(d) {
       return d.value;
-    });
+    }).legend('ne');
     return sales.drawPie(pointData.slice(0, 1));
   });
 });

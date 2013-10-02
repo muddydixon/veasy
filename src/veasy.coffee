@@ -838,19 +838,13 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-
-    @legend('v')
     @xScale = x = d3.scale.ordinal()
       .rangeBands([0, @width + @margin.width], 0.1)
       .domain((serie.name for serie in series))
 
     radius = Math.min(x.rangeBand() / 2, @height / 2)
-    outerMargin = opt.outerMargin or 10
-    innerMargin = Math.min (opt.innerMargin or 0), radius - outerMargin - 10
-
-    @xScale = x = d3.scale.ordinal()
-      .rangeBands([0, @width + @margin.width], 0.1)
-      .domain((serie.name for serie in series))
+    outerMargin = if opt.outerMargin? then opt.outerMargin else 10
+    innerMargin = if radius - outerMargin - 10 > 0 then Math.min (opt.innerMargin or 0), radius - outerMargin - 10 else opt.innerMargin or 0
 
     category10 = d3.scale.category10()
     centeringOffset = x.rangeBand() / 2 - radius * 1.5
@@ -880,8 +874,8 @@ class Veasy
         .on('mouseout', @clearInhibit('g.arc'))
         .on('touchend', @clearInhibit('g.arc'))
 
-      legend = @appendLegend(serie.data.map((d)=> {name: @_x(d)}))
-      legend.attr('transform', "translate(#{radius + x(serie.name) + centeringOffset + radius}, 0)")
+      legend = @appendLegend(serie.data.map((d)=> {name: @_x(d)}), color)
+      if legend? then legend.attr('transform', "translate(#{radius + x(serie.name) + centeringOffset + radius}, 0)")
 
     if tooltipFormat = @opt.tooltip?.format
       $("svg##{@id} path").tipsy
