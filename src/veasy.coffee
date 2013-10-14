@@ -697,6 +697,37 @@ class Veasy
     @appendLegend(series)
 
   #
+  # ### draw hist gram
+  #
+  drawHist: (series, opt = {})->
+    mergedSeries = @getMergedSeries series
+    opt = new Option @opt, opt
+
+    # now breaks gets only bin num, in future arbitrary ranges
+    breaks = opt.breaks or 10
+
+    allYRange = d3.extent mergedSeries, @_y
+
+    for size in [100, 500, 1000, 2000, 5000, 10000]
+      if allYRange[1] - allYRange[0] < size
+        tick = size / breaks
+        allYRange[0] = (0|allYRange[0] / tick) * tick
+        allYRange[1] = (0|allYRange[1] / tick) * tick + tick
+
+        for serie in series
+          serie._data = serie.data
+          serie.data = d3.nest().key((d)=> (0|@_y(d) / tick) * tick)
+            .rollup((values)-> values.length)
+            .entries(serie.data)
+
+        break
+
+    @opt.barMargin = 0
+    @_y = (d)-> d.values
+    @_x = (d)-> +d.key
+    @drawBar([series[1]])
+
+  #
   # ### box plot
   #
   drawBox: (series, opt = {})->

@@ -466,6 +466,54 @@ describe('flow chart', function() {
   });
 });
 
+describe('histgram', function() {
+  var baseid, id, monochrom, pointData;
+  baseid = 'hist';
+  id = 0;
+  pointData = [0, 1, 2, 3].map(function(id) {
+    var _i, _ref, _results;
+    return {
+      name: "series " + id,
+      data: (function() {
+        _results = [];
+        for (var _i = 0, _ref = 200 - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+        return _results;
+      }).apply(this).map(function(i) {
+        return {
+          label: "category" + i,
+          value: 0 | 300 + Math.random() * 700
+        };
+      })
+    };
+  });
+  monochrom = ["#000", "#333", "#666", "#999", "#CCC"];
+  beforeEach(function() {
+    this.__id__ = id++;
+    return $('<div>', {
+      "class": "pane",
+      id: "" + baseid + "_" + this.__id__
+    }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
+  });
+  return it('basically point', function() {
+    var chart, sales;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      width: 300,
+      tooltip: {
+        format: function(d) {
+          return d.value;
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.label;
+    }).y(function(d) {
+      return d.value;
+    }).legend('swx3');
+    return sales.drawHist(pointData);
+  });
+});
+
 var baseid, id, monochrom, pointData, seriesData;
 
 baseid = 'line';
