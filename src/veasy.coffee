@@ -200,7 +200,7 @@ class Veasy
   #
   # ### getMergedSeries
   #
-  # get merged all series data to range
+  # get merged all series data to domain
   #
   getMergedSeries: (series)->
     merged = []
@@ -255,8 +255,8 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-    allXrange = d3.extent mergedSeries, @_x
-    allYrange = d3.extent mergedSeries, @_y
+    allXdomain = d3.extent mergedSeries, @_x
+    allYdomain = d3.extent mergedSeries, @_y
 
     xType = @_x(mergedSeries[0]).constructor
     yType = Number
@@ -266,10 +266,10 @@ class Veasy
 
     @xScale = x =
       if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXrange))
+    x.domain(opt.xlim or d3.extent(allXdomain))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYrange))
+    y.domain(opt.ylim or d3.extent(allYdomain))
       .range([@height, 0])
 
     line = d3.svg.line()
@@ -372,8 +372,8 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-    allXrange = d3.extent mergedSeries, @_x
-    allYrange = d3.extent mergedSeries, @_y
+    allXdomain = d3.extent mergedSeries, @_x
+    allYdomain = d3.extent mergedSeries, @_y
 
     xType = @_x(mergedSeries[0]).constructor
     yType = Number
@@ -383,10 +383,10 @@ class Veasy
 
     @xScale = x =
       if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXrange))
+    x.domain(opt.xlim or d3.extent(allXdomain))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYrange))
+    y.domain(opt.ylim or d3.extent(allYdomain))
       .range([@height, 0])
 
     area = d3.svg.area()
@@ -468,10 +468,10 @@ class Veasy
       return err
     opt = new Option @opt, opt
 
-    allXrange = d3.extent mergedSeries, @_x
-    allYrange = d3.extent mergedSeries, @_y
+    allXdomain = d3.extent mergedSeries, @_x
+    allYdomain = d3.extent mergedSeries, @_y
 
-    rangeInEachX = d3.nest().key(@_x)
+    domainInEachX = d3.nest().key(@_x)
       .rollup((vals)=> vals.reduce(((p, c)=> p + @_y(c)), 0) )
       .entries(mergedSeries)
 
@@ -483,7 +483,7 @@ class Veasy
 
     @xScale = x =
       if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXrange))
+    x.domain(opt.xlim or d3.extent(allXdomain))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
     y.range([@height, 0])
@@ -565,7 +565,7 @@ class Veasy
       labels = {}
       labels[@_x(dat)] = 1 for dat in mergedSeries
       allLabels = (label for label of labels).sort(@opt.sort)
-    allYrange = d3.extent mergedSeries, @_y
+    allYdomain = d3.extent mergedSeries, @_y
 
     xType = String
     yType = Number
@@ -577,11 +577,11 @@ class Veasy
 
     if opt.transpose
       x.rangeBands([0, @height], barMargin).domain(allLabels)
-      y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
+      y.domain(opt.ylim or [0, d3.extent(allYdomain)[1]])
         .range([0, @width])
     else
       x.rangeBands([0, @width], barMargin).domain(allLabels)
-      y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
+      y.domain(opt.ylim or [0, d3.extent(allYdomain)[1]])
         .range([@height, 0])
 
     bandWidth = x.rangeBand() / series.length
@@ -705,7 +705,7 @@ class Veasy
     opt = new Option @opt, opt
 
     allLabels = series.map (d)-> d.name
-    allYrange = d3.extent mergedSeries, @_y
+    allYdomain = d3.extent mergedSeries, @_y
 
     xType = String
     yType = Number
@@ -714,7 +714,7 @@ class Veasy
     @yScale = y = d3.scale[opt.yscale or "linear"]()
 
     x.rangeBands([0, @width], 0.1).domain(allLabels)
-    y.domain(opt.ylim or [0, d3.extent(allYrange)[1]])
+    y.domain(opt.ylim or [0, d3.extent(allYdomain)[1]])
       .range([@height, 0])
 
     bandWidth = x.rangeBand()
@@ -969,8 +969,8 @@ class Veasy
 
     opt = new Option @opt, opt
 
-    allXrange = d3.extent mergedSeries, @_x
-    allYrange = d3.extent mergedSeries, @_y
+    allXdomain = d3.extent mergedSeries, @_x
+    allYdomain = d3.extent mergedSeries, @_y
 
     xType = @_x(mergedSeries[0]).constructor
     yType = Number
@@ -979,10 +979,10 @@ class Veasy
     yScale = opt.yscale or "linear"
 
     @xScale = x = if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXrange))
+    x.domain(opt.xlim or d3.extent(allXdomain))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYrange))
+    y.domain(opt.ylim or d3.extent(allYdomain))
       .range([@height, 0])
 
     category10 = d3.scale.category10()
