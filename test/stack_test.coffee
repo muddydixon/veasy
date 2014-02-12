@@ -36,3 +36,19 @@ describe 'stack chart', ->
     expect(stacks).have.length 4
     for stack, idx in stacks
       expect($(stack).attr('d')).not.contain "NaN"
+
+  it 'basically series zero', ->
+    chart = $("##{baseid}_#{this.__id__}")
+    sales = new Veasy chart,
+      axis:
+        x:
+          title: "x axis"
+        y:
+          title: "y axis"
+    sales.x((d)-> d.time).y((d)-> d.value)
+    sales.drawStack seriesData, {stackType: "silhouette"}
+
+    stacks = chart.find('path.stack')
+    expect(stacks).have.length 4
+    for stack, idx in stacks
+      expect($(stack).attr('d')).not.contain "NaN"

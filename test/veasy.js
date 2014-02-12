@@ -1414,7 +1414,7 @@ describe('stack chart', function() {
       id: "" + baseid + "_" + this.__id__
     }).append($('<h1>').text("" + this.test.parent.title + "/" + this.__id__)).appendTo($('body'));
   });
-  return it('basically series', function() {
+  it('basically series', function() {
     var chart, idx, sales, stack, stacks, _i, _len, _results;
     chart = $("#" + baseid + "_" + this.__id__);
     sales = new Veasy(chart, {
@@ -1433,6 +1433,36 @@ describe('stack chart', function() {
       return d.value;
     });
     sales.drawStack(seriesData);
+    stacks = chart.find('path.stack');
+    expect(stacks).have.length(4);
+    _results = [];
+    for (idx = _i = 0, _len = stacks.length; _i < _len; idx = ++_i) {
+      stack = stacks[idx];
+      _results.push(expect($(stack).attr('d')).not.contain("NaN"));
+    }
+    return _results;
+  });
+  return it('basically series zero', function() {
+    var chart, idx, sales, stack, stacks, _i, _len, _results;
+    chart = $("#" + baseid + "_" + this.__id__);
+    sales = new Veasy(chart, {
+      axis: {
+        x: {
+          title: "x axis"
+        },
+        y: {
+          title: "y axis"
+        }
+      }
+    });
+    sales.x(function(d) {
+      return d.time;
+    }).y(function(d) {
+      return d.value;
+    });
+    sales.drawStack(seriesData, {
+      stackType: "silhouette"
+    });
     stacks = chart.find('path.stack');
     expect(stacks).have.length(4);
     _results = [];
