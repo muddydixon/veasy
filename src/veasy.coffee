@@ -467,6 +467,7 @@ class Veasy
     if err = @isValidPositionAccessor mergedSeries[0]
       return err
     opt = new Option @opt, opt
+    stackType = opt.stackType or "expand"
 
     allXdomain = d3.extent mergedSeries, @_x
     allYdomain = d3.extent mergedSeries, @_y
@@ -486,12 +487,20 @@ class Veasy
     x.domain(opt.xlim or d3.extent(allXdomain))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.range([@height, 0])
+    y
+      .range([@height, 0])
 
     stack = d3.layout.stack()
-      .offset('expand')
+      .offset(stackType)
       .values((d)-> d.data)
       .y(@_y).x(@_x)
+    stackedData = stack(series)
+
+    yDomain = stack.domain?() or [
+      d3.min series[0].data, (d)-> d.y0
+      d3.max series[series.length - 1].data, (d)-> d.y + d.y0
+    ]
+    y.domain(yDomain)
 
     area = d3.svg.area()
       .x((d)=> x(@_x(d)))
@@ -506,7 +515,7 @@ class Veasy
       color = (d, idx, sid)->
         category10(sid)
 
-    l = @svg.selectAll("path.stack").data(stack(series)).enter()
+    l = @svg.selectAll("path.stack").data(stackedData).enter()
       .append("path").attr('class', (d, sid)-> "stack serie-#{sid}")
       .attr("d", (d)-> area(d.data))
       .attr("fill", (d, sid)-> color(d, null, sid))
