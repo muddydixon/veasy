@@ -209,6 +209,18 @@ class Veasy
     merged
 
   #
+  # ### mergeLim
+  #
+  # merge specific limit by option and domain of data
+  #
+  mergeLim: (lim, extent)->
+    lim = [] unless lim
+    [
+      if lim[0]? then lim[0] else extent[0]
+      if lim[1]? then lim[1] else extent[1]
+    ]
+
+  #
   # ### isValidPositionAccessor
   #
   isValidPositionAccessor: (data)->
@@ -266,10 +278,10 @@ class Veasy
 
     @xScale = x =
       if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXdomain))
+    x.domain(@mergeLim(opt.xlim, d3.extent(allXdomain)))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYdomain))
+    y.domain(@mergeLim(opt.ylim, d3.extent(allYdomain)))
       .range([@height, 0])
 
     line = d3.svg.line()
@@ -383,10 +395,10 @@ class Veasy
 
     @xScale = x =
       if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXdomain))
+    x.domain(@mergeLim(opt.xlim, d3.extent(allXdomain)))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYdomain))
+    y.domain(@mergeLim(opt.ylim, d3.extent(allYdomain)))
       .range([@height, 0])
 
     area = d3.svg.area()
@@ -484,7 +496,7 @@ class Veasy
 
     @xScale = x =
       if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXdomain))
+    x.domain(@mergeLim(opt.xlim, d3.extent(allXdomain)))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
     y
@@ -500,7 +512,7 @@ class Veasy
       d3.min series[0].data, (d)-> d.y0
       d3.max series[series.length - 1].data, (d)-> d.y + d.y0
     ]
-    y.domain(yDomain)
+    y.domain(@mergeLim(opt.ylim, yDomain))
 
     area = d3.svg.area()
       .x((d)=> x(@_x(d)))
@@ -988,10 +1000,10 @@ class Veasy
     yScale = opt.yscale or "linear"
 
     @xScale = x = if xType.name is 'Date' then d3.time.scale() else d3.scale[xScale]()
-    x.domain(opt.xlim or d3.extent(allXdomain))
+    x.domain(@mergeLim(opt.xlim, d3.extent(allXdomain)))
       .range([0, @width])
     @yScale = y = d3.scale[yScale]()
-    y.domain(opt.ylim or d3.extent(allYdomain))
+    y.domain(@mergeLim(opt.ylim, d3.extent(allYdomain)))
       .range([@height, 0])
 
     category10 = d3.scale.category10()

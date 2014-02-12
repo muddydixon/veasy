@@ -1237,7 +1237,9 @@ describe('scatter plot', function() {
     }).y(function(d) {
       return d.value;
     }).legend('s');
-    return sales.drawScatterPlot(seriesData);
+    return sales.drawScatterPlot(seriesData, {
+      ylim: [0]
+    });
   });
   it('basically series color accessor', function() {
     var chart, color, sales;
@@ -1251,7 +1253,9 @@ describe('scatter plot', function() {
     }).color(function(d, idx) {
       return color(d.sales);
     });
-    return sales.drawScatterPlot(seriesData);
+    return sales.drawScatterPlot(seriesData, {
+      ylim: [null, 2000]
+    });
   });
   it('basically series color accessor, size accessor', function() {
     var chart, color, sales;
