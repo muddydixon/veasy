@@ -29,7 +29,7 @@ describe 'scatter plot', ->
     sales = new Veasy chart
     color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"])
     sales.x((d)-> d.time).y((d)-> d.value).legend('s')
-    sales.drawScatterPlot seriesData
+    sales.drawScatterPlot seriesData, {ylim: [0,]}
 
     # lines = chart.find('path.line')
     # expect(lines).have.length 4
@@ -42,7 +42,7 @@ describe 'scatter plot', ->
     color = d3.scale.linear().domain([0, 1000]).range(["red", "blue"])
     sales.x((d)-> d.time).y((d)-> d.value)
       .color((d, idx)-> color(d.sales))
-    sales.drawScatterPlot seriesData
+    sales.drawScatterPlot seriesData, {ylim: [null, 2000]}
 
     # lines = chart.find('path.line')
     # expect(lines).have.length 4
