@@ -50,7 +50,7 @@ class Veasy
       else if margin.length is 3
         margins = top: margin[0], right: margin[1], bottom: margin[2], left: margin[1]
       else
-        margins = top: margin[0], right: margin[1], bottom: margin[3], left: margin[3]
+        margins = top: margin[0], right: margin[1], bottom: margin[2], left: margin[3]
     else if typeof margin is 'object'
       if typeof margin.top is 'number' and typeof margin.right is 'number' and typeof margin.bottom is 'number' and typeof margin.left is 'number'
         margins = margin
