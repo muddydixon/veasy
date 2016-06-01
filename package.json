@@ -13,8 +13,16 @@
   "author": "muddydixon@gmail.com",
   "license": "Apache License Version 2.0",
   "devDependencies": {
+    "chai": "^3.5.0",
+    "grunt": "~0.4.1",
     "grunt-contrib-coffee": "~0.7.0",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt": "~0.4.1"
+    "mocha": "^2.5.3"
+  },
+  "dependencies": {
+    "d3": "^3.5.17",
+    "d3-sankey": "^0.2.1",
+    "jquery": "^2.2.4",
+    "tipsy": "^1.0.0"
   }
 }
